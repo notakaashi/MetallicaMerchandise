@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage Metallica Merch Store transactions and order statuses.">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" href="/public/css/main.css">
+</head>
+<body data-page="transactions">
+
+<%- include('../layout/navbar', { user }) %>
+
+<div class="admin-layout">
+  <%- include('../layout/sidebar', { user, title }) %>
+
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1 class="page-header-title">Transactions</h1>
+        <p class="page-header-subtitle">Manage all customer orders — update status to trigger receipt emails</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+      <div class="kpi-card" style="flex:1;min-width:160px;padding:16px">
+        <div class="kpi-label">Pending</div>
+        <div class="kpi-value" id="count-pending" style="font-size:24px">—</div>
+      </div>
+      <div class="kpi-card" style="flex:1;min-width:160px;padding:16px">
+        <div class="kpi-label">Completed</div>
+        <div class="kpi-value" id="count-completed" style="font-size:24px;color:var(--success)">—</div>
+      </div>
+      <div class="kpi-card" style="flex:1;min-width:160px;padding:16px">
+        <div class="kpi-label">Cancelled</div>
+        <div class="kpi-value" id="count-cancelled" style="font-size:24px;color:var(--danger)">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="datatable-wrap">
+          <table id="transactions-table" class="dataTable" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding:14px 18px;background:var(--bg-secondary);border-radius:var(--radius-md);border-left:4px solid var(--accent-red);font-size:13px;color:var(--text-secondary)">
+      💡 <strong style="color:var(--text-primary)">Pro tip:</strong> Changing an order status to <strong>Completed</strong> will automatically generate a PDF receipt and send it to the customer's email address.
+    </div>
+  </main>
+</div>
+
+<div class="toast-container"></div>
+<script src="/public/js/admin.js"></script>
+<script>
+  // Count status badges
+  $(document).ajaxComplete(function() {
+    setTimeout(function() {
+      const rows = $('#transactions-table').DataTable().data().toArray();
+      const pending = rows.filter(r => r.status === 'pending').length;
+      const completed = rows.filter(r => r.status === 'completed').length;
+      const cancelled = rows.filter(r => r.status === 'cancelled').length;
+      $('#count-pending').text(pending);
+      $('#count-completed').text(completed);
+      $('#count-cancelled').text(cancelled);
+    }, 500);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a Metallica Merch Store account and join the pit.">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+  <link rel="stylesheet" href="/public/css/main.css">
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-box">
+    <div class="auth-logo">⚡ METALLICA</div>
+    <div class="auth-tagline">Join the Metallica Faithful</div>
+
+    <form id="register-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="reg-name">Full Name</label>
+        <input
+          type="text"
+          id="reg-name"
+          name="name"
+          class="form-control"
+          placeholder="James Hetfield"
+          autocomplete="name"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg-email">Email Address</label>
+        <input
+          type="email"
+          id="reg-email"
+          name="email"
+          class="form-control"
+          placeholder="your@email.com"
+          autocomplete="email"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg-password">Password</label>
+        <input
+          type="password"
+          id="reg-password"
+          name="password"
+          class="form-control"
+          placeholder="••••••••"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reg-confirm">Confirm Password</label>
+        <input
+          type="password"
+          id="reg-confirm"
+          name="confirm_password"
+          class="form-control"
+          placeholder="••••••••"
+          autocomplete="new-password"
+          required
+        >
+      </div>
+
+      <button type="submit" id="register-btn" class="btn btn-primary w-full btn-lg" style="margin-top:8px">
+        Create Account 🎸
+      </button>
+    </form>
+
+    <div class="auth-divider">or</div>
+
+    <p style="text-align:center;font-size:14px;color:var(--text-secondary)">
+      Already have an account?
+      <a href="/login" style="color:var(--accent-red);font-weight:600">Login here →</a>
+    </p>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="/public/js/main.js"></script>
+</body>
+</html>
