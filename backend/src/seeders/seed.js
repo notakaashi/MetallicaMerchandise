@@ -49,21 +49,30 @@ async function seed() {
       { name: 'Death Magnetic Flag', description: 'Large wall flag measuring 3x5 feet.', price: 18.00, stock: 35 }
     ];
 
+    const imageMap = [
+      'product1_1.jpg',
+      'product1_2.jpg',
+      'product3_1.jpg',
+      'product4_1.jpg',
+      'product5_1.jpg',
+      'product6_1.jpg',
+      'product7_1.jpg',
+      'product8_1.jpg',
+      'product9_1.jpg',
+      'product4_2.jpg'
+    ];
+
     const createdProducts = [];
-    for (const p of productsData) {
+    for (let i = 0; i < productsData.length; i++) {
+      const p = productsData[i];
       const product = await Product.create(p);
       createdProducts.push(product);
       
-      // 4. Create dummy images. For simplicity we'll just write empty files to uploads/ to satisfy the "pointing to a filename that exists" requirement
-      const filename = `product-${product.id}.jpg`;
-      const filePath = path.join(uploadsDir, filename);
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, ''); // Create empty dummy file
-      }
+      const realFilename = imageMap[i];
 
       await ProductImage.create({
         product_id: product.id,
-        image_path: filename
+        image_path: realFilename
       });
     }
     console.log('Products & images created');

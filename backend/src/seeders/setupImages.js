@@ -93,4 +93,4 @@ for (const imgName of seedImages) {
 }
 
 console.log(`✅ Image setup complete. ${copied} image(s) processed.`);
-module.exports = { setupImages: () => {} };
+module.exports = { setupImages: () => { } };

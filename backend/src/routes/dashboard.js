@@ -52,7 +52,7 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     if (!totalRevenue) {
       totalRevenue = 0;
     }
-    
+
     let totalOrders = await Transaction.count();
     let totalProducts = await Product.count();
 
@@ -60,17 +60,17 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     let formattedSales = [];
     for (let i = 0; i < salesPerProduct.length; i++) {
       let sale = salesPerProduct[i];
-      
+
       let productName = 'Unknown';
       if (sale.product) {
         productName = sale.product.name;
       }
-      
+
       let totalSold = parseInt(sale.dataValues.total_sold);
       if (isNaN(totalSold)) {
         totalSold = 0;
       }
-      
+
       let totalRev = parseFloat(sale.dataValues.total_revenue);
       if (isNaN(totalRev)) {
         totalRev = 0;
@@ -87,12 +87,12 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     let formattedRevenue = [];
     for (let i = 0; i < dailyRevenue.length; i++) {
       let daily = dailyRevenue[i];
-      
+
       let rev = parseFloat(daily.dataValues.revenue);
       if (isNaN(rev)) {
         rev = 0;
       }
-      
+
       let orders = parseInt(daily.dataValues.orders);
       if (isNaN(orders)) {
         orders = 0;
@@ -109,7 +109,7 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     let formattedStatus = [];
     for (let i = 0; i < statusCounts.length; i++) {
       let statusItem = statusCounts[i];
-      
+
       let count = parseInt(statusItem.dataValues.count);
       if (isNaN(count)) {
         count = 0;
