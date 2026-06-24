@@ -74,7 +74,7 @@ window.Cart = {
           <p>Your cart is empty</p>
           <p style="font-size:13px;color:var(--text-muted)">Add some merch to get started!</p>
         </div>`);
-      $('#cart-total-value').text('$0.00');
+      $('#cart-total-value').text('₱0.00');
       return;
     }
 
@@ -89,7 +89,7 @@ window.Cart = {
           ${imgTag}
           <div class="cart-item-details">
             <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+            <div class="cart-item-price">₱${(item.price * item.quantity).toFixed(2)}</div>
             <div class="cart-qty-control">
               <button class="cart-qty-btn" data-action="dec" data-id="${item.id}">−</button>
               <span class="cart-qty-value">${item.quantity}</span>
@@ -101,7 +101,7 @@ window.Cart = {
     }
 
     $body.html(html);
-    $('#cart-total-value').text(`$${this.total().toFixed(2)}`);
+    $('#cart-total-value').text(`₱${this.total().toFixed(2)}`);
   },
 
   open:  function () { $('#cart-overlay, #cart-drawer').addClass('open'); $('body').css('overflow', 'hidden'); this.renderDrawer(); },
@@ -171,7 +171,7 @@ window.loadProducts = function (page = 1, append = false) {
           </div>
           <div class="product-card-body">
             <div class="product-card-name">${p.name}</div>
-            <div class="product-card-price">$${parseFloat(p.price).toFixed(2)}</div>
+            <div class="product-card-price">₱${parseFloat(p.price).toFixed(2)}</div>
             <div style="margin-top:6px">${stockBadge}</div>
           </div>
           <div class="product-card-footer">
@@ -242,7 +242,7 @@ window.openProductModal = function (productId) {
         <div>${imagesHtml}</div>
         <div>
           <h2 style="font-size:24px;font-weight:800;margin-bottom:12px">${p.name}</h2>
-          <div style="font-size:32px;font-weight:900;color:var(--accent-red);font-family:'Outfit',sans-serif;margin-bottom:12px">$${parseFloat(p.price).toFixed(2)}</div>
+          <div style="font-size:32px;font-weight:900;color:var(--accent-red);font-family:'Outfit',sans-serif;margin-bottom:12px">₱${parseFloat(p.price).toFixed(2)}</div>
           <div style="margin-bottom:16px">${stockBadge}</div>
           <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin-bottom:24px">${p.description || ''}</p>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
@@ -280,15 +280,15 @@ window.renderCheckoutSummary = function () {
     <div class="order-item-row">
       <div style="flex:1">
         <div class="order-item-name">${item.name}</div>
-        <div class="order-item-meta">Qty: ${item.quantity} × $${item.price.toFixed(2)}</div>
+        <div class="order-item-meta">Qty: ${item.quantity} × ₱${item.price.toFixed(2)}</div>
       </div>
-      <div style="font-weight:700;color:var(--accent-red)">$${(item.price * item.quantity).toFixed(2)}</div>
+      <div style="font-weight:700;color:var(--accent-red)">₱${(item.price * item.quantity).toFixed(2)}</div>
     </div>`).join('');
 
   html += `
     <div class="order-total-row">
       <span class="order-total-label">Total</span>
-      <span class="order-total-value">$${window.Cart.total().toFixed(2)}</span>
+      <span class="order-total-value">₱${window.Cart.total().toFixed(2)}</span>
     </div>`;
 
   $summary.html(html);
@@ -331,9 +331,9 @@ window.loadMyOrders = function () {
               ${img}
               <div style="flex:1">
                 <div class="order-item-name">${item.product ? item.product.name : 'Product'}</div>
-                <div class="order-item-meta">Qty: ${item.quantity} × $${parseFloat(item.price).toFixed(2)}</div>
+                <div class="order-item-meta">Qty: ${item.quantity} × ₱${parseFloat(item.price).toFixed(2)}</div>
               </div>
-              <div style="font-weight:700;color:var(--accent-red)">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
+              <div style="font-weight:700;color:var(--accent-red)">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
             </div>`;
         }
 
@@ -350,7 +350,7 @@ window.loadMyOrders = function () {
               ${itemsHtml}
               <div class="order-total-row">
                 <span class="order-total-label">Order Total</span>
-                <span class="order-total-value">$${parseFloat(tx.total_price).toFixed(2)}</span>
+                <span class="order-total-value">₱${parseFloat(tx.total_price).toFixed(2)}</span>
               </div>
             </div>
           </div>`;

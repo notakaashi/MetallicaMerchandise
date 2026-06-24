@@ -53,7 +53,7 @@ $(document).ready(function () {
           </div>
           <div class="product-info">
             <div class="product-name open-modal">${p.name}</div>
-            <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
+            <div class="product-price">₱${parseFloat(p.price).toFixed(2)}</div>
             <div class="product-footer">
               ${stockBadge}
               <button class="btn btn-primary btn-sm add-to-cart-quick" data-id="${p.id}" ${p.stock <= 0 ? 'disabled' : ''}>
@@ -112,7 +112,7 @@ $(document).ready(function () {
   $(document).on('click', '.open-modal', function() {
     let p = $(this).closest('.product-card').data('product');
     $('#detail-name').text(p.name);
-    $('#detail-price').text(`$${parseFloat(p.price).toFixed(2)}`);
+    $('#detail-price').text(`₱${parseFloat(p.price).toFixed(2)}`);
     $('#detail-desc').text(p.description || 'No description available.');
     $('#detail-qty').val(1);
     

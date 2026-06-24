@@ -44,7 +44,7 @@ function animateNumber(selector, value, isCurrency) {
   let current = 0;
   const timer = setInterval(() => {
     current = Math.min(current + step, end);
-    $el.text(isCurrency ? `$${current.toFixed(2)}` : Math.round(current).toLocaleString());
+    $el.text(isCurrency ? `₱${current.toFixed(2)}` : Math.round(current).toLocaleString());
     if (current >= end) clearInterval(timer);
   }, 16);
 }
@@ -73,7 +73,7 @@ function renderBarChart(salesData) {
       datasets: [{ label: 'Units Sold', data: salesData.map(s => s.total_sold), backgroundColor: 'rgba(222, 10, 38, 0.7)', borderColor: '#DE0A26', borderWidth: 2, borderRadius: 6, borderSkipped: false }],
     },
     options: chartDefaults({
-      plugins: { legend: { display: false }, tooltip: { callbacks: { afterLabel: (ctx) => `Revenue: $${salesData[ctx.dataIndex].total_revenue.toFixed(2)}` } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { afterLabel: (ctx) => `Revenue: ₱${salesData[ctx.dataIndex].total_revenue.toFixed(2)}` } } },
       scales: {
         x: { ticks: { color: '#8a8a8a', font: { size: 11 }, maxRotation: 30 }, grid: { color: 'rgba(255,255,255,0.04)' } },
         y: { ticks: { color: '#8a8a8a', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true },
@@ -95,7 +95,7 @@ function renderLineChart(dailyData) {
       plugins: { legend: { display: false } },
       scales: {
         x: { ticks: { color: '#8a8a8a', font: { size: 11 }, maxTicksLimit: 8 }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: { ticks: { color: '#8a8a8a', font: { size: 11 }, callback: v => `$${v}` }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true },
+        y: { ticks: { color: '#8a8a8a', font: { size: 11 }, callback: v => `₱${v}` }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true },
       },
     }),
   });
@@ -246,7 +246,7 @@ function initProductsTable() {
         { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${API_BASE}/uploads/${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">Merch</span>' },
         { data: 'name', title: 'Product Name' },
         { data: 'category', title: 'Category', render: (d) => `<span style="text-transform:capitalize;color:var(--text-secondary)">${d || 'other'}</span>` },
-        { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">$${parseFloat(d).toFixed(2)}</strong>` },
+        { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">₱${parseFloat(d).toFixed(2)}</strong>` },
         { data: 'stock', title: 'Stock', render: (d) => d > 10 ? `<span class="badge badge-success">${d}</span>` : d > 0 ? `<span class="badge badge-warning">${d}</span>` : `<span class="badge badge-danger">0</span>` },
         { data: 'id', title: 'Actions', orderable: false, render: (id) => `<div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary edit-product-btn" data-id="${id}">Edit</button><button class="btn btn-sm btn-danger delete-product-btn" data-id="${id}">Delete</button></div>` },
       ],
@@ -348,7 +348,7 @@ function initTransactionsTable() {
           { data: 'id', title: '#', width: '50px' },
           { data: 'user', title: 'Customer', render: (u) => u ? `<div>${u.name}</div><div style="font-size:12px;color:var(--text-muted)">${u.email}</div>` : '—' },
           { data: 'items', title: 'Items', orderable: false, render: (items) => items ? `${items.length} item(s)` : '—' },
-          { data: 'total_price', title: 'Total', render: (d) => `<strong style="color:var(--accent-red)">$${parseFloat(d).toFixed(2)}</strong>` },
+          { data: 'total_price', title: 'Total', render: (d) => `<strong style="color:var(--accent-red)">₱${parseFloat(d).toFixed(2)}</strong>` },
           {
             data: 'status', title: 'Status',
             render: (d, _, row) => {
