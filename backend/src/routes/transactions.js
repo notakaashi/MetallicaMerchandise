@@ -9,45 +9,65 @@ const { generateReceipt } = require('../services/pdfService');
 // POST /api/transactions — create order (authenticated)
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { items } = req.body;
-    // items: [{ product_id, quantity }]
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    let items = req.body.items;
+    
+    // items should be a list of objects like: [{ product_id: 1, quantity: 2 }]
+    if (!items || Array.isArray(items) === false || items.length === 0) {
       return res.status(400).json({ error: 'Cart items are required' });
     }
 
     let totalPrice = 0;
-    const itemDetails = [];
+    let itemDetails = [];
 
-    // Validate products and stock
-    for (const item of items) {
-      const product = await Product.findByPk(item.product_id);
-      if (!product) return res.status(404).json({ error: `Product #${item.product_id} not found` });
-      if (product.stock < item.quantity) {
-        return res.status(400).json({ error: `Insufficient stock for "${product.name}"` });
+    // Loop through each item in the cart to check the stock and calculate the price
+    for (let i = 0; i < items.length; i++) {
+      let currentItem = items[i];
+      let product = await Product.findByPk(currentItem.product_id);
+      
+      if (product === null) {
+        return res.status(404).json({ error: 'Product #' + currentItem.product_id + ' not found' });
       }
-      totalPrice += parseFloat(product.price) * item.quantity;
-      itemDetails.push({ product, quantity: item.quantity });
+      
+      if (product.stock < currentItem.quantity) {
+        return res.status(400).json({ error: 'Insufficient stock for "' + product.name + '"' });
+      }
+      
+      // Calculate how much this item costs and add it to the total price
+      let itemCost = parseFloat(product.price) * currentItem.quantity;
+      totalPrice = totalPrice + itemCost;
+      
+      // Save the product details to our list so we can create the transaction items later
+      itemDetails.push({ 
+        product: product, 
+        quantity: currentItem.quantity 
+      });
     }
 
-    // Create transaction
-    const tx = await Transaction.create({
+    // Save the new transaction record in the database
+    let newTransaction = await Transaction.create({
       user_id: req.user.id,
       status: 'pending',
       total_price: totalPrice.toFixed(2),
     });
 
-    // Create items + deduct stock
-    for (const { product, quantity } of itemDetails) {
+    // Save each individual item connected to the transaction
+    for (let i = 0; i < itemDetails.length; i++) {
+      let detail = itemDetails[i];
+      
       await TransactionItem.create({
-        transaction_id: tx.id,
-        product_id: product.id,
-        quantity,
-        price: product.price,
+        transaction_id: newTransaction.id,
+        product_id: detail.product.id,
+        quantity: detail.quantity,
+        price: detail.product.price,
       });
-      await product.update({ stock: product.stock - quantity });
+      
+      // Deduct the bought quantity from the product's available stock
+      let newStock = detail.product.stock - detail.quantity;
+      await detail.product.update({ stock: newStock });
     }
 
-    const full = await Transaction.findByPk(tx.id, {
+    // Get the newly created transaction with all its items to return to the frontend
+    let finalTransaction = await Transaction.findByPk(newTransaction.id, {
       include: [{
         model: TransactionItem,
         as: 'items',
@@ -55,7 +75,7 @@ router.post('/', authMiddleware, async (req, res) => {
       }],
     });
 
-    res.status(201).json({ message: 'Order placed successfully', transaction: full });
+    res.status(201).json({ message: 'Order placed successfully', transaction: finalTransaction });
   } catch (err) {
     console.error('Create transaction error:', err);
     res.status(500).json({ error: 'Failed to place order' });
@@ -65,7 +85,7 @@ router.post('/', authMiddleware, async (req, res) => {
 // GET /api/transactions/my — customer's own orders
 router.get('/my', authMiddleware, async (req, res) => {
   try {
-    const transactions = await Transaction.findAll({
+    let myTransactions = await Transaction.findAll({
       where: { user_id: req.user.id },
       include: [{
         model: TransactionItem,
@@ -74,7 +94,8 @@ router.get('/my', authMiddleware, async (req, res) => {
       }],
       order: [['createdAt', 'DESC']],
     });
-    res.json({ transactions });
+    
+    res.json({ transactions: myTransactions });
   } catch (err) {
     console.error('My transactions error:', err);
     res.status(500).json({ error: 'Failed to fetch orders' });
@@ -84,7 +105,7 @@ router.get('/my', authMiddleware, async (req, res) => {
 // GET /api/transactions — all transactions (admin only)
 router.get('/', adminMiddleware, async (req, res) => {
   try {
-    const transactions = await Transaction.findAll({
+    let allTransactions = await Transaction.findAll({
       include: [
         { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
         {
@@ -95,7 +116,8 @@ router.get('/', adminMiddleware, async (req, res) => {
       ],
       order: [['createdAt', 'DESC']],
     });
-    res.json({ transactions });
+    
+    res.json({ transactions: allTransactions });
   } catch (err) {
     console.error('Admin transactions error:', err);
     res.status(500).json({ error: 'Failed to fetch transactions' });
@@ -105,12 +127,14 @@ router.get('/', adminMiddleware, async (req, res) => {
 // PATCH /api/transactions/:id/status — update status (admin only)
 router.patch('/:id/status', adminMiddleware, async (req, res) => {
   try {
-    const { status } = req.body;
-    if (!['pending', 'completed', 'cancelled'].includes(status)) {
+    let newStatus = req.body.status;
+    let validStatuses = ['pending', 'completed', 'cancelled'];
+    
+    if (validStatuses.includes(newStatus) === false) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
-    const tx = await Transaction.findByPk(req.params.id, {
+    let transaction = await Transaction.findByPk(req.params.id, {
       include: [
         { model: User, as: 'user' },
         {
@@ -120,29 +144,36 @@ router.patch('/:id/status', adminMiddleware, async (req, res) => {
         },
       ],
     });
-    if (!tx) return res.status(404).json({ error: 'Transaction not found' });
+    
+    if (transaction === null) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
 
-    const previousStatus = tx.status;
-    await tx.update({ status });
+    let previousStatus = transaction.status;
+    
+    // Save the new status
+    await transaction.update({ status: newStatus });
 
-    // Restore stock on cancellation
-    if (status === 'cancelled' && previousStatus !== 'cancelled') {
-      for (const item of tx.items) {
-        await item.product.update({ stock: item.product.stock + item.quantity });
+    // Restore stock if the order was just cancelled
+    if (newStatus === 'cancelled' && previousStatus !== 'cancelled') {
+      for (let i = 0; i < transaction.items.length; i++) {
+        let item = transaction.items[i];
+        let newStock = item.product.stock + item.quantity;
+        await item.product.update({ stock: newStock });
       }
     }
 
-    // Send receipt email on completion
-    if (status === 'completed' && previousStatus !== 'completed') {
+    // Send receipt email if the order was just completed
+    if (newStatus === 'completed' && previousStatus !== 'completed') {
       try {
-        const pdfBuffer = await generateReceipt(tx);
-        await sendReceiptEmail(tx.user, tx, pdfBuffer);
+        let pdfBuffer = await generateReceipt(transaction);
+        await sendReceiptEmail(transaction.user, transaction, pdfBuffer);
       } catch (emailErr) {
-        console.error('Email/PDF error (non-fatal):', emailErr.message);
+        console.error('Email or PDF error:', emailErr.message);
       }
     }
 
-    res.json({ message: 'Status updated', transaction: { id: tx.id, status: tx.status } });
+    res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status } });
   } catch (err) {
     console.error('Update status error:', err);
     res.status(500).json({ error: 'Failed to update status' });

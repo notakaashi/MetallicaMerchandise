@@ -8,7 +8,7 @@ const { Transaction, TransactionItem, Product, sequelize } = require('../models'
 router.get('/metrics', adminMiddleware, async (req, res) => {
   try {
     // 1. Sales per product (bar chart)
-    const salesPerProduct = await TransactionItem.findAll({
+    let salesPerProduct = await TransactionItem.findAll({
       attributes: [
         'product_id',
         [fn('SUM', col('quantity')), 'total_sold'],
@@ -21,10 +21,10 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     });
 
     // 2. Daily revenue over last 30 days (line chart)
-    const thirtyDaysAgo = new Date();
+    let thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const dailyRevenue = await Transaction.findAll({
+    let dailyRevenue = await Transaction.findAll({
       attributes: [
         [fn('DATE', col('createdAt')), 'date'],
         [fn('SUM', col('total_price')), 'revenue'],
@@ -39,7 +39,7 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     });
 
     // 3. Transaction status distribution (pie chart)
-    const statusCounts = await Transaction.findAll({
+    let statusCounts = await Transaction.findAll({
       attributes: [
         'status',
         [fn('COUNT', col('id')), 'count'],
@@ -48,29 +48,88 @@ router.get('/metrics', adminMiddleware, async (req, res) => {
     });
 
     // 4. Summary KPIs
-    const totalRevenue = await Transaction.sum('total_price', { where: { status: 'completed' } });
-    const totalOrders = await Transaction.count();
-    const totalProducts = await Product.count();
+    let totalRevenue = await Transaction.sum('total_price', { where: { status: 'completed' } });
+    if (!totalRevenue) {
+      totalRevenue = 0;
+    }
+    
+    let totalOrders = await Transaction.count();
+    let totalProducts = await Product.count();
 
+    // Format the sales per product array
+    let formattedSales = [];
+    for (let i = 0; i < salesPerProduct.length; i++) {
+      let sale = salesPerProduct[i];
+      
+      let productName = 'Unknown';
+      if (sale.product) {
+        productName = sale.product.name;
+      }
+      
+      let totalSold = parseInt(sale.dataValues.total_sold);
+      if (isNaN(totalSold)) {
+        totalSold = 0;
+      }
+      
+      let totalRev = parseFloat(sale.dataValues.total_revenue);
+      if (isNaN(totalRev)) {
+        totalRev = 0;
+      }
+
+      formattedSales.push({
+        product: productName,
+        total_sold: totalSold,
+        total_revenue: totalRev,
+      });
+    }
+
+    // Format the daily revenue array
+    let formattedRevenue = [];
+    for (let i = 0; i < dailyRevenue.length; i++) {
+      let daily = dailyRevenue[i];
+      
+      let rev = parseFloat(daily.dataValues.revenue);
+      if (isNaN(rev)) {
+        rev = 0;
+      }
+      
+      let orders = parseInt(daily.dataValues.orders);
+      if (isNaN(orders)) {
+        orders = 0;
+      }
+
+      formattedRevenue.push({
+        date: daily.dataValues.date,
+        revenue: rev,
+        orders: orders,
+      });
+    }
+
+    // Format the status distribution array
+    let formattedStatus = [];
+    for (let i = 0; i < statusCounts.length; i++) {
+      let statusItem = statusCounts[i];
+      
+      let count = parseInt(statusItem.dataValues.count);
+      if (isNaN(count)) {
+        count = 0;
+      }
+
+      formattedStatus.push({
+        status: statusItem.status,
+        count: count,
+      });
+    }
+
+    // Send the final response
     res.json({
-      salesPerProduct: salesPerProduct.map(s => ({
-        product: s.product ? s.product.name : 'Unknown',
-        total_sold: parseInt(s.dataValues.total_sold) || 0,
-        total_revenue: parseFloat(s.dataValues.total_revenue) || 0,
-      })),
-      dailyRevenue: dailyRevenue.map(d => ({
-        date: d.dataValues.date,
-        revenue: parseFloat(d.dataValues.revenue) || 0,
-        orders: parseInt(d.dataValues.orders) || 0,
-      })),
-      statusDistribution: statusCounts.map(s => ({
-        status: s.status,
-        count: parseInt(s.dataValues.count) || 0,
-      })),
+      salesPerProduct: formattedSales,
+      dailyRevenue: formattedRevenue,
+      statusDistribution: formattedStatus,
       kpis: {
-        totalRevenue: totalRevenue || 0,
-        totalOrders,
-        totalProducts,
+        totalRevenue: totalRevenue,
+        totalOrders: totalOrders,
+        totalProducts: totalProducts,
       },
     });
   } catch (err) {
