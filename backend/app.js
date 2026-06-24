@@ -43,10 +43,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
+const { sequelize } = require('./src/models');
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🤘 Metallica Merch Store API running on http://localhost:${PORT}`);
-  console.log(`   Frontend: open frontend/index.html in your browser`);
+sequelize.sync({ alter: true }).then(() => {
+  app.listen(PORT, () => {
+    console.log(`Metallica Merch Store API running on http://localhost:${PORT}`);
+    console.log(`   Frontend: open frontend/index.html in your browser`);
+  });
+}).catch(err => {
+  console.error('Unable to connect to the database:', err);
 });
 
 module.exports = app;

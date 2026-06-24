@@ -1,20 +1,5 @@
 require('dotenv').config();
-const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'metallica_merch',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASS || '',
-  {
-    host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql',
-    logging: false,
-    define: {
-      underscored: false,
-      timestamps: true,
-    },
-  }
-);
+const sequelize = require('../config/database');
 
 // Import models
 const User = require('./User')(sequelize);

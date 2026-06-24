@@ -30,7 +30,7 @@ window.Cart = {
       });
     }
     this.save(items);
-    window.showToast(`"${product.name}" added to cart 🛒`, 'success');
+    window.showToast(`"${product.name}" added to cart`, 'success');
   },
 
   remove: function (productId) {
@@ -70,7 +70,7 @@ window.Cart = {
     if (items.length === 0) {
       $body.html(`
         <div class="cart-empty">
-          <span class="cart-empty-icon">🛒</span>
+          <span class="cart-empty-icon">Cart</span>
           <p>Your cart is empty</p>
           <p style="font-size:13px;color:var(--text-muted)">Add some merch to get started!</p>
         </div>`);
@@ -82,7 +82,7 @@ window.Cart = {
     for (const item of items) {
       const imgTag = item.image
         ? `<img class="cart-item-image" src="${item.image}" alt="${item.name}" onerror="this.style.display='none'">`
-        : `<div class="cart-item-image" style="background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:6px;">🎸</div>`;
+        : `<div class="cart-item-image" style="background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:6px;">Merch</div>`;
 
       html += `
         <div class="cart-item" data-id="${item.id}">
@@ -142,7 +142,7 @@ window.loadProducts = function (page = 1, append = false) {
     if (products.length === 0 && !append) {
       $('#product-grid').html(`
         <div style="grid-column:1/-1;text-align:center;padding:80px 0">
-          <div style="font-size:56px;margin-bottom:16px">🎸</div>
+          <div style="font-size:56px;margin-bottom:16px">Merch</div>
           <h3 style="color:var(--text-secondary)">No products found</h3>
           <p style="color:var(--text-muted)">Try a different search term</p>
         </div>`);
@@ -152,8 +152,8 @@ window.loadProducts = function (page = 1, append = false) {
     let html = '';
     for (const p of products) {
       const img = p.images && p.images.length
-        ? `<img class="product-card-image" src="${p.images[0].image_path}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'product-card-image-placeholder\\'>🎸</div>'">`
-        : `<div class="product-card-image-placeholder">🎸</div>`;
+        ? `<img class="product-card-image" src="${API_BASE}/uploads/${p.images[0].image_path}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'product-card-image-placeholder\\'>Merch</div>'">`
+        : `<div class="product-card-image-placeholder">Merch</div>`;
 
       const stockBadge = p.stock > 10
         ? `<span class="badge badge-success">In Stock</span>`
@@ -177,7 +177,7 @@ window.loadProducts = function (page = 1, append = false) {
           <div class="product-card-footer">
             <button class="btn btn-primary btn-sm w-full add-to-cart-btn"
               data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" ${p.stock === 0 ? 'disabled' : ''}>
-              ${p.stock === 0 ? 'Sold Out' : '🛒 Add to Cart'}
+              ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
             </button>
           </div>
         </div>`;
@@ -194,8 +194,8 @@ function renderPagination(pagination) {
   if (infiniteScrollEnabled) {
     $('#pagination').html(
       pagination.page < pagination.pages
-        ? `<button id="load-more-btn" class="btn btn-secondary btn-lg">Load More 🎸</button>`
-        : `<p style="color:var(--text-muted);text-align:center">You've seen it all! 🤘</p>`
+        ? `<button id="load-more-btn" class="btn btn-secondary btn-lg">Load More</button>`
+        : `<p style="color:var(--text-muted);text-align:center">You've seen it all!</p>`
     );
     return;
   }
@@ -228,13 +228,13 @@ window.openProductModal = function (productId) {
     const images = p.images || [];
 
     let imagesHtml = images.length
-      ? `<div class="product-images-grid">${images.map(img => `<img src="${img.image_path}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`
-      : `<div style="background:var(--bg-tertiary);border-radius:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:72px">🎸</div>`;
+      ? `<div class="product-images-grid">${images.map(img => `<img src="${API_BASE}/uploads/${img.image_path}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`
+      : `<div style="background:var(--bg-tertiary);border-radius:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:72px">Merch</div>`;
 
     const stockBadge = p.stock > 10
       ? `<span class="badge badge-success">✓ In Stock (${p.stock})</span>`
       : p.stock > 0
-        ? `<span class="badge badge-warning">⚠ Low Stock (${p.stock} left)</span>`
+        ? `<span class="badge badge-warning">Low Stock (${p.stock} left)</span>`
         : `<span class="badge badge-danger">✗ Sold Out</span>`;
 
     $('#product-modal-body').html(`
@@ -256,7 +256,7 @@ window.openProductModal = function (productId) {
           <button class="btn btn-primary btn-lg w-full" id="modal-add-to-cart"
             data-id="${p.id}" data-name="${p.name}" data-price="${p.price}"
             ${p.stock === 0 ? 'disabled' : ''} style="margin-bottom:10px">
-            ${p.stock === 0 ? 'Sold Out' : '🛒 Add to Cart'}
+            ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
           </button>
           <a href="/checkout.html" class="btn btn-secondary btn-lg w-full" style="text-align:center">Checkout →</a>
         </div>
@@ -309,10 +309,10 @@ window.loadMyOrders = function () {
       if (!txs.length) {
         $('#orders-container').html(`
           <div style="text-align:center;padding:80px 0;color:var(--text-muted)">
-            <div style="font-size:56px;margin-bottom:16px">📦</div>
+            <div style="font-size:56px;margin-bottom:16px">Box</div>
             <h3>No orders yet</h3>
             <p>Start shopping and place your first order!</p>
-            <a href="/index.html" class="btn btn-primary mt-3">Shop Now 🎸</a>
+            <a href="/index.html" class="btn btn-primary mt-3">Shop Now</a>
           </div>`);
         return;
       }
@@ -323,8 +323,8 @@ window.loadMyOrders = function () {
         let itemsHtml = '';
         for (const item of tx.items || []) {
           const img = item.product && item.product.images && item.product.images.length
-            ? `<img class="order-item-img" src="${item.product.images[0].image_path}" alt="${item.product.name}">`
-            : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg-tertiary);border-radius:6px">🎸</div>`;
+            ? `<img class="order-item-img" src="${API_BASE}/uploads/${item.product.images[0].image_path}" alt="${item.product.name}">`
+            : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg-tertiary);border-radius:6px">Merch</div>`;
 
           itemsHtml += `
             <div class="order-item-row">
@@ -505,13 +505,13 @@ $(document).ready(function () {
           data: JSON.stringify({ items: cartItems.map(i => ({ product_id: i.id, quantity: i.quantity })) }),
           success: function (data) {
             window.Cart.clear();
-            window.showToast(`Order #${data.transaction.id} placed! 🎸`, 'success', 'Order Confirmed');
+            window.showToast(`Order #${data.transaction.id} placed!`, 'success', 'Order Confirmed');
             setTimeout(() => window.location.href = '/orders.html', 1500);
           },
           error: function (xhr) {
             const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Checkout failed';
             window.showToast(msg, 'error');
-            $btn.prop('disabled', false).html('Place Order 🤘');
+            $btn.prop('disabled', false).html('Place Order');
           },
         });
       },

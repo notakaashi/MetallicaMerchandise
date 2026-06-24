@@ -11,7 +11,7 @@ const { Product, ProductImage } = require('../models');
 // Configure image uploading
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let uploadDir = path.join(__dirname, '../../public/uploads');
+    let uploadDir = path.join(__dirname, '../../uploads');
     
     // Create folder if it doesn't exist
     if (fs.existsSync(uploadDir) === false) {
@@ -222,7 +222,7 @@ router.post('/', adminMiddleware, upload.array('images', 5), async (req, res) =>
         let file = req.files[i];
         await ProductImage.create({
           product_id: newProduct.id,
-          image_path: '/uploads/' + file.filename,
+          image_path: file.filename,
         });
       }
     }
@@ -300,7 +300,7 @@ router.put('/:id', adminMiddleware, upload.array('images', 5), async (req, res) 
         let imgRecord = await ProductImage.findByPk(imageId);
         
         if (imgRecord !== null) {
-          let filePath = path.join(__dirname, '../../public', imgRecord.image_path);
+          let filePath = path.join(__dirname, '../../uploads', imgRecord.image_path);
           if (fs.existsSync(filePath) === true) {
             fs.unlinkSync(filePath); // Delete file from hard drive
           }
@@ -315,7 +315,7 @@ router.put('/:id', adminMiddleware, upload.array('images', 5), async (req, res) 
         let file = req.files[i];
         await ProductImage.create({
           product_id: product.id,
-          image_path: '/uploads/' + file.filename,
+          image_path: file.filename,
         });
       }
     }
@@ -346,7 +346,7 @@ router.delete('/:id', adminMiddleware, async (req, res) => {
     // Delete image files from hard drive
     for (let i = 0; i < product.images.length; i++) {
       let img = product.images[i];
-      let filePath = path.join(__dirname, '../../public', img.image_path);
+      let filePath = path.join(__dirname, '../../uploads', img.image_path);
       if (fs.existsSync(filePath) === true) {
         fs.unlinkSync(filePath);
       }

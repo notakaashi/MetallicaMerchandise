@@ -15,7 +15,7 @@
 
 <div class="auth-page">
   <div class="auth-box">
-    <div class="auth-logo">⚡ METALLICA</div>
+    <div class="auth-logo">METALLICA</div>
     <div class="auth-tagline">Join the Metallica Faithful</div>
 
     <form id="register-form" novalidate>
@@ -36,7 +36,7 @@
         <input type="password" id="reg-confirm" name="confirm_password" class="form-control" placeholder="••••••••" autocomplete="new-password" required>
       </div>
       <button type="submit" id="register-btn" class="btn btn-primary w-full btn-lg" style="margin-top:8px">
-        Create Account 🎸
+        Create Account
       </button>
     </form>
 
@@ -80,13 +80,13 @@
           contentType: 'application/json',
           data: JSON.stringify({ name: $('#reg-name').val().trim(), email: $('#reg-email').val().trim(), password: $('#reg-password').val() }),
           success: function () {
-            window.showToast('Account created! Please log in. 🎸', 'success');
+            window.showToast('Account created! Please log in.', 'success');
             setTimeout(() => window.location.href = '/login.html', 1200);
           },
           error: function (xhr) {
             const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Registration failed';
             window.showToast(msg, 'error');
-            $btn.prop('disabled', false).html('Create Account 🎸');
+            $btn.prop('disabled', false).html('Create Account');
           },
         });
       },

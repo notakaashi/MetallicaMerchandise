@@ -14,13 +14,13 @@ window.showToast = function (message, type = 'info', title = '') {
     document.body.appendChild(container);
   }
 
-  const icons  = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const icons  = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
   const titles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+    <span class="toast-icon">${icons[type] || 'Info'}</span>
     <div class="toast-content">
       <div class="toast-title">${title || titles[type]}</div>
       <div class="toast-message">${message}</div>
@@ -101,7 +101,7 @@ window.renderNavbar = function (opts = {}) {
     <nav class="navbar" id="main-navbar">
       <div class="navbar-inner">
         <a href="/index.html" class="navbar-brand">
-          <span class="navbar-logo">⚡ METALLICA</span>
+          <span class="navbar-logo">METALLICA</span>
           <span class="navbar-tagline">Merch Store</span>
         </a>
         ${searchHtml}
@@ -127,7 +127,7 @@ window.renderNavbar = function (opts = {}) {
       </div>
       <div class="cart-drawer-body" id="cart-drawer-body">
         <div class="cart-empty">
-          <span class="cart-empty-icon">🛒</span>
+          <span class="cart-empty-icon"></span>
           <p>Your cart is empty</p>
           <p style="font-size:13px;color:var(--text-muted)">Add some merch to get started!</p>
         </div>
@@ -137,7 +137,7 @@ window.renderNavbar = function (opts = {}) {
           <span class="cart-total-label">Total</span>
           <span class="cart-total-value" id="cart-total-value">$0.00</span>
         </div>
-        <a href="/checkout.html" class="btn btn-primary w-full btn-lg">Checkout 🤘</a>
+        <a href="/checkout.html" class="btn btn-primary w-full btn-lg">Checkout</a>
       </div>
     </aside>
     <div class="toast-container" id="toast-container"></div>`;
@@ -154,7 +154,7 @@ window.renderNavbar = function (opts = {}) {
         complete: function () {
           window.Auth.clearSession();
           window.Cart && window.Cart.clear();
-          window.showToast('Logged out. See you in the pit! 🤘', 'info');
+          window.showToast('Logged out. See you in the pit!', 'info');
           setTimeout(() => window.location.href = '/index.html', 800);
         },
       });
@@ -188,7 +188,7 @@ window.renderAdminSidebar = function (activePage) {
   const sidebarHtml = `
     <aside class="sidebar" id="admin-sidebar">
       <div style="padding:0 20px;margin-bottom:8px">
-        <a href="/index.html" style="font-family:'Outfit',sans-serif;font-weight:900;font-size:20px;color:var(--accent-red);text-decoration:none;display:flex;align-items:center;gap:8px;">⚡ METALLICA</a>
+        <a href="/index.html" style="font-family:'Outfit',sans-serif;font-weight:900;font-size:20px;color:var(--accent-red);text-decoration:none;display:flex;align-items:center;gap:8px;">METALLICA</a>
         <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px">Admin Panel</div>
       </div>
       <div style="padding:0 20px;margin:16px 0 8px">
@@ -223,7 +223,7 @@ window.renderAdminSidebar = function (activePage) {
       </ul>
       <div style="margin-top:auto;padding:20px;font-size:11px;color:var(--text-muted);text-align:center">
         © 2024 Metallica Merch Store<br>
-        <span style="color:var(--accent-red)">🤘 For The Love of Metal</span>
+        <span style="color:var(--accent-red)">For The Love of Metal</span>
       </div>
     </aside>`;
 

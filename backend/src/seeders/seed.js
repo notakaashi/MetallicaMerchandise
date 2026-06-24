@@ -144,7 +144,7 @@ async function seed() {
       for (const img of p.images) {
         await ProductImage.create({
           product_id: product.id,
-          image_path: `/uploads/${img}`,
+          image_path: img,
         });
       }
 

@@ -15,7 +15,7 @@
 
 <div class="auth-page">
   <div class="auth-box">
-    <div class="auth-logo">⚡ METALLICA</div>
+    <div class="auth-logo">METALLICA</div>
     <div class="auth-tagline">Merch Store — Member Login</div>
 
     <form id="login-form" novalidate>
@@ -28,7 +28,7 @@
         <input type="password" id="login-password" name="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
       </div>
       <button type="submit" id="login-btn" class="btn btn-primary w-full btn-lg" style="margin-top:8px">
-        🤘 Login
+        Login
       </button>
     </form>
 
@@ -80,14 +80,14 @@
           data: JSON.stringify({ email: $('#login-email').val().trim(), password: $('#login-password').val() }),
           success: function (data) {
             window.Auth.setSession(data.token, data.user);
-            window.showToast('Welcome back, ' + data.user.name + '! 🤘', 'success');
+            window.showToast('Welcome back, ' + data.user.name + '!', 'success');
             const redirect = new URLSearchParams(window.location.search).get('redirect') || '/index.html';
             setTimeout(() => { window.location.href = data.user.role === 'admin' ? '/admin/dashboard.html' : redirect; }, 800);
           },
           error: function (xhr) {
             const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Login failed';
             window.showToast(msg, 'error');
-            $btn.prop('disabled', false).html('🤘 Login');
+            $btn.prop('disabled', false).html('Login');
           },
         });
       },

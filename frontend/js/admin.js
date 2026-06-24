@@ -183,7 +183,7 @@ function initProductsTable() {
       data: data.products,
       columns: [
         { data: 'id', title: '#', width: '50px' },
-        { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">🎸</span>' },
+        { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${API_BASE}/uploads/${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">Merch</span>' },
         { data: 'name', title: 'Product Name' },
         { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">$${parseFloat(d).toFixed(2)}</strong>` },
         { data: 'stock', title: 'Stock', render: (d) => d > 10 ? `<span class="badge badge-success">${d}</span>` : d > 0 ? `<span class="badge badge-warning">${d}</span>` : `<span class="badge badge-danger">0</span>` },
@@ -313,7 +313,7 @@ function initTransactionsTable() {
     $.ajax({ url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
       success: () => {
         window.showToast(`Order #${id} marked as ${status}`, 'success');
-        if (status === 'completed') window.showToast('Receipt email sent to customer 📧', 'info');
+        if (status === 'completed') window.showToast('Receipt email sent to customer', 'info');
         const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
         $select.css('border-color', colors[status] || '');
       },
