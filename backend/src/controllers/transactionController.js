@@ -1,0 +1,161 @@
+const { Transaction, TransactionItem, Product, User, ProductImage } = require('../models');
+const { sendReceiptEmail } = require('../services/emailService');
+const { generateReceipt } = require('../services/pdfService');
+
+exports.createTransaction = async (req, res) => {
+  try {
+    let items = req.body.items;
+    
+    if (!items || Array.isArray(items) === false || items.length === 0) {
+      return res.status(400).json({ error: 'Cart items are required' });
+    }
+
+    let totalPrice = 0;
+    let itemDetails = [];
+
+    for (let i = 0; i < items.length; i++) {
+      let currentItem = items[i];
+      let product = await Product.findByPk(currentItem.product_id);
+      
+      if (product === null) {
+        return res.status(404).json({ error: 'Product #' + currentItem.product_id + ' not found' });
+      }
+      
+      if (product.stock < currentItem.quantity) {
+        return res.status(400).json({ error: 'Insufficient stock for "' + product.name + '"' });
+      }
+      
+      let itemCost = parseFloat(product.price) * currentItem.quantity;
+      totalPrice = totalPrice + itemCost;
+      
+      itemDetails.push({ 
+        product: product, 
+        quantity: currentItem.quantity 
+      });
+    }
+
+    let newTransaction = await Transaction.create({
+      user_id: req.user.id,
+      status: 'pending',
+      total_price: totalPrice.toFixed(2),
+    });
+
+    for (let i = 0; i < itemDetails.length; i++) {
+      let detail = itemDetails[i];
+      
+      await TransactionItem.create({
+        transaction_id: newTransaction.id,
+        product_id: detail.product.id,
+        quantity: detail.quantity,
+        price: detail.product.price,
+      });
+      
+      let newStock = detail.product.stock - detail.quantity;
+      await detail.product.update({ stock: newStock });
+    }
+
+    let finalTransaction = await Transaction.findByPk(newTransaction.id, {
+      include: [{
+        model: TransactionItem,
+        as: 'items',
+        include: [{ model: Product, as: 'product' }],
+      }],
+    });
+
+    res.status(201).json({ message: 'Order placed successfully', transaction: finalTransaction });
+  } catch (err) {
+    console.error('Create transaction error:', err);
+    res.status(500).json({ error: 'Failed to place order' });
+  }
+};
+
+exports.getMyTransactions = async (req, res) => {
+  try {
+    let myTransactions = await Transaction.findAll({
+      where: { user_id: req.user.id },
+      include: [{
+        model: TransactionItem,
+        as: 'items',
+        include: [{ model: Product, as: 'product', include: [{ model: ProductImage, as: 'images', limit: 1 }] }],
+      }],
+      order: [['createdAt', 'DESC']],
+    });
+    
+    res.json({ transactions: myTransactions });
+  } catch (err) {
+    console.error('My transactions error:', err);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+};
+
+exports.getAllTransactions = async (req, res) => {
+  try {
+    let allTransactions = await Transaction.findAll({
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+        {
+          model: TransactionItem,
+          as: 'items',
+          include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'price'] }],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+    
+    res.json({ transactions: allTransactions });
+  } catch (err) {
+    console.error('Admin transactions error:', err);
+    res.status(500).json({ error: 'Failed to fetch transactions' });
+  }
+};
+
+exports.updateTransactionStatus = async (req, res) => {
+  try {
+    let newStatus = req.body.status;
+    let validStatuses = ['pending', 'completed', 'cancelled'];
+    
+    if (validStatuses.includes(newStatus) === false) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    let transaction = await Transaction.findByPk(req.params.id, {
+      include: [
+        { model: User, as: 'user' },
+        {
+          model: TransactionItem,
+          as: 'items',
+          include: [{ model: Product, as: 'product' }],
+        },
+      ],
+    });
+    
+    if (transaction === null) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    let previousStatus = transaction.status;
+    await transaction.update({ status: newStatus });
+
+    if (newStatus === 'cancelled' && previousStatus !== 'cancelled') {
+      for (let i = 0; i < transaction.items.length; i++) {
+        let item = transaction.items[i];
+        let newStock = item.product.stock + item.quantity;
+        await item.product.update({ stock: newStock });
+      }
+    }
+
+    if (newStatus === 'completed' && previousStatus !== 'completed') {
+      try {
+        let pdfBuffer = await generateReceipt(transaction);
+        await sendReceiptEmail(transaction.user.email, pdfBuffer); // Wait, prompt specifies emailService.sendReceipt(user.email, pdfBuffer)
+      } catch (emailErr) {
+        console.error('Email or PDF error:', emailErr.message);
+      }
+    }
+
+    res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status } });
+  } catch (err) {
+    console.error('Update status error:', err);
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+};

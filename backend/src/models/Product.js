@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 
-module.exports = (sequelize) => {
-  const Product = sequelize.define('Product', {
+const sequelize = require('../config/database');
+
+const Product = sequelize.define('Product', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -30,5 +31,4 @@ module.exports = (sequelize) => {
     timestamps: true,
   });
 
-  return Product;
-};
+module.exports = Product;

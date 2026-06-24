@@ -136,11 +136,10 @@ function initUsersTable() {
           {
             data: 'id', title: 'Actions', orderable: false,
             render: (id, _, row) => {
-              const otherRole   = row.role === 'admin' ? 'customer' : 'admin';
-              const otherStatus = row.status === 'active' ? 'inactive' : 'active';
-              return `<div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn btn-sm btn-secondary toggle-role-btn" data-id="${id}" data-role="${otherRole}">→ ${otherRole}</button>
-                <button class="btn btn-sm ${row.status === 'active' ? 'btn-danger' : 'btn-success'} toggle-status-btn" data-id="${id}" data-status="${otherStatus}">${otherStatus}</button>
+              const rowDataStr = encodeURIComponent(JSON.stringify(row));
+              return `<div style="display:flex;gap:6px">
+                <button class="btn btn-sm btn-secondary edit-user-btn" data-user="${rowDataStr}">Edit</button>
+                <button class="btn btn-sm btn-danger delete-user-btn" data-id="${id}" data-name="${row.name}">Delete</button>
               </div>`;
             },
           },
@@ -154,19 +153,80 @@ function initUsersTable() {
     error: () => window.showToast('Failed to load users', 'error'),
   });
 
-  $(document).on('click', '.toggle-role-btn', function () {
-    const id = $(this).data('id'), role = $(this).data('role');
-    $.ajax({ url: `${API_BASE}/api/users/${id}/role`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ role }),
-      success: () => { window.showToast(`Role updated to ${role}`, 'success'); initUsersTable(); },
-      error:   () => window.showToast('Failed to update role', 'error'),
+  let editingUserId = null;
+
+  $(document).on('click', '#add-user-btn', function () {
+    editingUserId = null;
+    $('#user-form')[0].reset();
+    $('#user-modal-title').text('Add User');
+    $('#role-option-admin').show();
+    $('#role-option-customer').hide();
+    $('#edit-user-role').val('admin');
+    $('#edit-user-status-group').hide();
+    $('#edit-user-password-group').show();
+    $('#edit-user-password').prop('required', true);
+    $('#user-form-modal').addClass('open');
+  });
+
+  $(document).on('click', '.edit-user-btn', function () {
+    const user = JSON.parse(decodeURIComponent($(this).data('user')));
+    editingUserId = user.id;
+    $('#user-form')[0].reset();
+    $('#user-modal-title').text('Edit User');
+    $('#edit-user-name').val(user.name);
+    $('#edit-user-email').val(user.email);
+    $('#edit-user-status').val(user.status);
+    $('#edit-user-status-group').show();
+    $('#edit-user-password-group').hide();
+    $('#edit-user-password').prop('required', false);
+
+    if (user.role === 'customer') {
+      $('#role-option-admin').hide();
+      $('#role-option-customer').show();
+      $('#edit-user-role').val('customer');
+    } else {
+      $('#role-option-admin').show();
+      $('#role-option-customer').show();
+      $('#edit-user-role').val(user.role);
+    }
+    
+    $('#user-form-modal').addClass('open');
+  });
+
+  $(document).on('click', '#user-form-modal-close, #user-modal-overlay-bg', function () {
+    $('#user-form-modal').removeClass('open');
+  });
+
+  $(document).on('submit', '#user-form', function (e) {
+    e.preventDefault();
+    const data = {
+      name: $('#edit-user-name').val().trim(),
+      email: $('#edit-user-email').val().trim(),
+      role: $('#edit-user-role').val(),
+      status: $('#edit-user-status').val()
+    };
+    if (!editingUserId) data.password = $('#edit-user-password').val();
+
+    const url    = editingUserId ? `${API_BASE}/api/users/${editingUserId}` : `${API_BASE}/api/users`;
+    const method = editingUserId ? 'PUT' : 'POST';
+
+    $.ajax({ url, method, contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify(data),
+      success: () => {
+        window.showToast(editingUserId ? 'User updated!' : 'User created!', 'success');
+        $('#user-form-modal').removeClass('open');
+        initUsersTable();
+      },
+      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save user', 'error'),
     });
   });
 
-  $(document).on('click', '.toggle-status-btn', function () {
-    const id = $(this).data('id'), status = $(this).data('status');
-    $.ajax({ url: `${API_BASE}/api/users/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
-      success: () => { window.showToast(`Status updated to ${status}`, 'success'); initUsersTable(); },
-      error:   () => window.showToast('Failed to update status', 'error'),
+  $(document).on('click', '.delete-user-btn', function () {
+    const id = $(this).data('id');
+    const name = $(this).data('name');
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    $.ajax({ url: `${API_BASE}/api/users/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
+      success: () => { window.showToast('User deleted', 'success'); initUsersTable(); },
+      error:   (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to delete user', 'error'),
     });
   });
 }
@@ -229,7 +289,14 @@ function initProductsTable() {
     if (!confirm('Delete this product? This cannot be undone.')) return;
     $.ajax({ url: `${API_BASE}/api/products/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
       success: () => { window.showToast('Product deleted', 'success'); initProductsTable(); },
-      error:   () => window.showToast('Failed to delete product', 'error'),
+      error: (xhr) => {
+        if (xhr.status === 200 || xhr.status === 204) {
+          window.showToast('Product deleted', 'success');
+          initProductsTable();
+        } else {
+          window.showToast(xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Failed to delete product', 'error');
+        }
+      },
     });
   });
 
