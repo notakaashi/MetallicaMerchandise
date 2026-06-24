@@ -3,15 +3,40 @@ const fs = require('fs');
 const { Op } = require('sequelize');
 const { Product, ProductImage } = require('../models');
 
+// Helper to build order array from sort string
+const getOrder = (sort) => {
+  switch (sort) {
+    case 'price_asc': return [['price', 'ASC']];
+    case 'price_desc': return [['price', 'DESC']];
+    case 'name_asc': return [['name', 'ASC']];
+    case 'name_desc': return [['name', 'DESC']];
+    case 'newest':
+    default:
+      return [['createdAt', 'DESC']];
+  }
+};
+
 exports.getAllProducts = async (req, res) => {
   try {
     let page = req.query.page ? parseInt(req.query.page) : 1;
     let limit = req.query.limit ? parseInt(req.query.limit) : 12;
     let offset = (page - 1) * limit;
 
+    let whereClause = {};
+    if (req.query.category && req.query.category !== 'all') {
+      whereClause.category = req.query.category;
+    }
+    if (req.query.q) {
+      whereClause[Op.or] = [
+        { name: { [Op.like]: '%' + req.query.q + '%' } },
+        { description: { [Op.like]: '%' + req.query.q + '%' } },
+      ];
+    }
+
     let result = await Product.findAndCountAll({
+      where: whereClause,
       include: [{ model: ProductImage, as: 'images', limit: 1 }],
-      order: [['createdAt', 'DESC']],
+      order: getOrder(req.query.sort),
       limit: limit,
       offset: offset,
       distinct: true,
@@ -39,14 +64,20 @@ exports.searchProducts = async (req, res) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 12;
     let offset = (page - 1) * limit;
 
+    let whereClause = {
+      [Op.or]: [
+        { name: { [Op.like]: '%' + searchQuery + '%' } },
+        { description: { [Op.like]: '%' + searchQuery + '%' } },
+      ],
+    };
+    if (req.query.category && req.query.category !== 'all') {
+      whereClause.category = req.query.category;
+    }
+
     let result = await Product.findAndCountAll({
-      where: {
-        [Op.or]: [
-          { name: { [Op.like]: '%' + searchQuery + '%' } },
-          { description: { [Op.like]: '%' + searchQuery + '%' } },
-        ],
-      },
+      where: whereClause,
       include: [{ model: ProductImage, as: 'images', limit: 1 }],
+      order: getOrder(req.query.sort),
       limit: limit,
       offset: offset,
       distinct: true,
@@ -70,8 +101,14 @@ exports.searchProducts = async (req, res) => {
 exports.autocompleteProducts = async (req, res) => {
   try {
     let searchQuery = req.query.q || '';
+    let whereClause = { name: { [Op.like]: '%' + searchQuery + '%' } };
+    
+    if (req.query.category && req.query.category !== 'all') {
+      whereClause.category = req.query.category;
+    }
+
     let products = await Product.findAll({
-      where: { name: { [Op.like]: '%' + searchQuery + '%' } },
+      where: whereClause,
       attributes: ['id', 'name', 'price'],
       limit: 8,
     });
@@ -108,7 +145,7 @@ exports.getProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    let { name, description, price, stock } = req.body;
+    let { name, description, price, stock, category } = req.body;
 
     if (!name || !price) {
       return res.status(400).json({ error: 'Name and price are required' });
@@ -122,7 +159,8 @@ exports.createProduct = async (req, res) => {
       name: name, 
       description: description, 
       price: parsedPrice, 
-      stock: parsedStock 
+      stock: parsedStock,
+      category: category || 'other'
     });
 
     if (req.files && req.files.length > 0) {
@@ -159,12 +197,14 @@ exports.updateProduct = async (req, res) => {
     let newDescription = req.body.description !== undefined ? req.body.description : product.description;
     let newPrice = req.body.price ? parseFloat(req.body.price) : product.price;
     let newStock = req.body.stock !== undefined ? parseInt(req.body.stock) : product.stock;
+    let newCategory = req.body.category || product.category;
 
     await product.update({
       name: newName,
       description: newDescription,
       price: newPrice,
       stock: newStock,
+      category: newCategory
     });
 
     let removeImages = req.body.removeImages;

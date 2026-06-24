@@ -66,7 +66,7 @@ window.renderNavbar = function (opts = {}) {
   const user = window.Auth.getUser();
 
   const searchHtml = showSearch ? `
-    <div class="navbar-search">
+    <div class="navbar-search" style="margin-left: 24px">
       <svg class="navbar-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
@@ -76,18 +76,30 @@ window.renderNavbar = function (opts = {}) {
   let userHtml;
   if (user && window.Auth.isLoggedIn()) {
     userHtml = `
-      <span style="font-size:13px;color:var(--text-secondary);">${user.name}</span>
-      ${user.role === 'admin'
-        ? `<a href="/admin/dashboard.html" class="btn btn-secondary btn-sm">Admin</a>`
-        : `<a href="/orders.html" class="btn btn-secondary btn-sm">My Orders</a>`}
-      <button id="logout-btn" class="btn btn-outline btn-sm">Logout</button>`;
+      <div style="position:relative" id="user-dropdown-container">
+        <button id="user-dropdown-btn" style="background:transparent;border:none;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px">
+          ${user.name}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div id="user-dropdown-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);min-width:140px;box-shadow:0 10px 25px rgba(0,0,0,0.5);z-index:100">
+          ${user.role === 'admin' 
+            ? `<a href="/admin/dashboard.html" style="display:block;padding:10px 16px;color:#e0e0e0;text-decoration:none;font-size:14px;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">Admin Panel</a>` 
+            : ``}
+          <a href="/orders.html" style="display:block;padding:10px 16px;color:#e0e0e0;text-decoration:none;font-size:14px;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">My Orders</a>
+          <div style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
+          <button id="logout-btn" style="display:block;width:100%;text-align:left;background:transparent;border:none;padding:10px 16px;color:#e0e0e0;font-family:'Inter',sans-serif;font-size:14px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">Logout</button>
+        </div>
+      </div>`;
   } else {
     userHtml = `
       <a href="/login.html" class="btn btn-ghost btn-sm">Login</a>
       <a href="/register.html" class="btn btn-primary btn-sm">Join Now</a>`;
   }
 
-  const cartHtml = showCart ? `
+  const isLogged = user && window.Auth.isLoggedIn();
+  const isAdminPage = window.location.pathname.startsWith('/admin');
+
+  const cartHtml = (showCart && isLogged) ? `
     <button class="cart-btn" id="cart-open-btn" aria-label="Open cart">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -97,6 +109,10 @@ window.renderNavbar = function (opts = {}) {
       <span class="cart-badge" style="display:none">0</span>
     </button>` : '';
 
+  const productsLinkHtml = !isAdminPage ? `
+    <a href="/products.html" style="margin-left:32px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">PRODUCTS</a>
+  ` : '';
+
   const navHtml = `
     <nav class="navbar" id="main-navbar">
       <div class="navbar-inner">
@@ -104,6 +120,7 @@ window.renderNavbar = function (opts = {}) {
           <span class="navbar-logo">METALLICA</span>
           <span class="navbar-tagline">Merch Store</span>
         </a>
+        ${productsLinkHtml}
         ${searchHtml}
         <div class="navbar-actions">
           <div id="navbar-user-area" style="display:flex;align-items:center;gap:8px">
@@ -144,6 +161,21 @@ window.renderNavbar = function (opts = {}) {
 
   document.body.insertAdjacentHTML('afterbegin', navHtml);
 
+  // Dropdown toggle logic
+  document.addEventListener('click', function(e) {
+    const dropdownBtn = document.getElementById('user-dropdown-btn');
+    const dropdownMenu = document.getElementById('user-dropdown-menu');
+    
+    if (dropdownBtn && dropdownMenu) {
+      if (dropdownBtn.contains(e.target)) {
+        const isVisible = dropdownMenu.style.display === 'block';
+        dropdownMenu.style.display = isVisible ? 'none' : 'block';
+      } else if (!dropdownMenu.contains(e.target)) {
+        dropdownMenu.style.display = 'none';
+      }
+    }
+  });
+
   // Wire up logout
   document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'logout-btn') {
@@ -158,6 +190,16 @@ window.renderNavbar = function (opts = {}) {
           setTimeout(() => window.location.href = '/index.html', 800);
         },
       });
+    }
+  });
+  
+  // Wire up search bar redirect to products page
+  document.addEventListener('keydown', function(e) {
+    if (e.target && e.target.id === 'navbar-search' && e.key === 'Enter') {
+      const q = e.target.value.trim();
+      if (q) {
+        window.location.href = `/products.html?q=${encodeURIComponent(q)}`;
+      }
     }
   });
 };

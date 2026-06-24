@@ -39,6 +39,7 @@
                 <th>#</th>
                 <th>Image</th>
                 <th>Name</th>
+                <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
                 <th>Actions</th>
@@ -72,6 +73,17 @@
             <input type="number" id="edit-price" name="price" class="form-control" placeholder="39.99" step="0.01" min="0" required>
           </div>
           <div class="form-group">
+            <label class="form-label" for="edit-category">Category *</label>
+            <select id="edit-category" name="category" class="form-control" required>
+              <option value="shirts">Shirts</option>
+              <option value="hoodies">Hoodies</option>
+              <option value="posters">Posters</option>
+              <option value="accessories">Accessories</option>
+              <option value="vinyl">Vinyl</option>
+              <option value="other" selected>Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
             <label class="form-label" for="edit-stock">Stock Quantity *</label>
             <input type="number" id="edit-stock" name="stock" class="form-control" placeholder="100" min="0" required>
           </div>

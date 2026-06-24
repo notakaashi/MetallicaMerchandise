@@ -245,6 +245,7 @@ function initProductsTable() {
         { data: 'id', title: '#', width: '50px' },
         { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${API_BASE}/uploads/${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">Merch</span>' },
         { data: 'name', title: 'Product Name' },
+        { data: 'category', title: 'Category', render: (d) => `<span style="text-transform:capitalize;color:var(--text-secondary)">${d || 'other'}</span>` },
         { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">$${parseFloat(d).toFixed(2)}</strong>` },
         { data: 'stock', title: 'Stock', render: (d) => d > 10 ? `<span class="badge badge-success">${d}</span>` : d > 0 ? `<span class="badge badge-warning">${d}</span>` : `<span class="badge badge-danger">0</span>` },
         { data: 'id', title: 'Actions', orderable: false, render: (id) => `<div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary edit-product-btn" data-id="${id}">Edit</button><button class="btn btn-sm btn-danger delete-product-btn" data-id="${id}">Delete</button></div>` },
@@ -273,6 +274,7 @@ function initProductsTable() {
       $('#edit-description').val(p.description);
       $('#edit-price').val(p.price);
       $('#edit-stock').val(p.stock);
+      $('#edit-category').val(p.category || 'other');
       let imgHtml = (p.images || []).map(img => `
         <div class="image-preview-item" data-img-id="${img.id}">
           <img src="${img.image_path}" alt="Product image">

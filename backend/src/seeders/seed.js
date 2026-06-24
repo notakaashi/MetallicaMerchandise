@@ -37,16 +37,16 @@ async function seed() {
 
     // 3. Create 10 realistic products
     const productsData = [
-      { name: 'Master of Puppets Tour T-Shirt', description: 'Classic black tee featuring the iconic album art.', price: 35.00, stock: 50 },
-      { name: 'Ride the Lightning Hoodie', description: 'Warm pullover hoodie with electric blue graphics.', price: 65.00, stock: 30 },
-      { name: 'Metallica Logo Guitar Picks (6-Pack)', description: 'Set of 6 premium guitar picks with the M logo.', price: 10.00, stock: 100 },
-      { name: 'Kill \'Em All Vinyl Record', description: 'Remastered 180g vinyl of the debut album.', price: 28.00, stock: 20 },
-      { name: 'Black Album Beanie', description: 'Cozy knit beanie with embroidered snake.', price: 25.00, stock: 45 },
-      { name: 'Justice for All Tour Poster', description: 'Limited edition 18x24 tour poster.', price: 20.00, stock: 15 },
-      { name: 'Ninja Star Belt Buckle', description: 'Heavy metal belt buckle featuring the Ninja Star logo.', price: 22.00, stock: 25 },
-      { name: 'Seek & Destroy Coffee Mug', description: 'Ceramic mug for your morning fuel.', price: 15.00, stock: 60 },
-      { name: 'Metallica World Tour Cap', description: 'Adjustable snapback cap.', price: 30.00, stock: 40 },
-      { name: 'Death Magnetic Flag', description: 'Large wall flag measuring 3x5 feet.', price: 18.00, stock: 35 }
+      { name: 'Master of Puppets Tour T-Shirt', description: 'Classic black tee featuring the iconic album art.', price: 35.00, stock: 50, category: 'shirts' },
+      { name: 'Ride the Lightning Hoodie', description: 'Warm pullover hoodie with electric blue graphics.', price: 65.00, stock: 30, category: 'hoodies' },
+      { name: 'Metallica Logo Guitar Picks (6-Pack)', description: 'Set of 6 premium guitar picks with the M logo.', price: 10.00, stock: 100, category: 'accessories' },
+      { name: 'Kill \'Em All Vinyl Record', description: 'Remastered 180g vinyl of the debut album.', price: 28.00, stock: 20, category: 'vinyl' },
+      { name: 'Black Album Beanie', description: 'Cozy knit beanie with embroidered snake.', price: 25.00, stock: 45, category: 'accessories' },
+      { name: 'Justice for All Tour Poster', description: 'Limited edition 18x24 tour poster.', price: 20.00, stock: 15, category: 'posters' },
+      { name: 'Ninja Star Belt Buckle', description: 'Heavy metal belt buckle featuring the Ninja Star logo.', price: 22.00, stock: 25, category: 'accessories' },
+      { name: 'Seek & Destroy Coffee Mug', description: 'Ceramic mug for your morning fuel.', price: 15.00, stock: 60, category: 'accessories' },
+      { name: 'Metallica World Tour Cap', description: 'Adjustable snapback cap.', price: 30.00, stock: 40, category: 'accessories' },
+      { name: 'Death Magnetic Flag', description: 'Large wall flag measuring 3x5 feet.', price: 18.00, stock: 35, category: 'posters' }
     ];
 
     const imageMap = [
