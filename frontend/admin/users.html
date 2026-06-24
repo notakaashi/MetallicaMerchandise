@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage Metallica Merch Store users — roles and status.">
+  <title>Users — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body data-page="users">
+
+<div class="admin-layout">
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1 class="page-header-title">User Management</h1>
+        <p class="page-header-subtitle">Manage roles and account status for all users</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="datatable-wrap">
+          <table id="users-table" class="dataTable" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+  $(document).ready(function () {
+    window.renderNavbar({ showCart: false, showSearch: false });
+  });
+</script>
+</body>
+</html>

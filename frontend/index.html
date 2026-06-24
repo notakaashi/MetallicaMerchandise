@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shop official Metallica merchandise — tour tees, hoodies, vinyl, accessories and more.">
+  <title>Metallica Merch Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+</head>
+<body>
+
+<!-- Navbar injected by auth.js -->
+
+<div class="page-wrapper">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-eyebrow">
+        <span>⚡</span> Official Merchandise
+      </div>
+      <h1 class="hero-title">
+        The <span>Heaviest</span><br>Merch in Metal
+      </h1>
+      <p class="hero-subtitle">
+        Tour tees, vinyls, hoodies, accessories and more — straight from the pit to your door.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="#catalog" class="btn btn-primary btn-lg">Shop Now 🎸</a>
+        <a href="#catalog" class="btn btn-secondary btn-lg">Browse All</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section class="catalog-section" id="catalog">
+    <div class="container">
+      <div class="catalog-header">
+        <h2 class="catalog-title">🎸 Merch Catalog</h2>
+        <div class="catalog-controls">
+          <label class="scroll-toggle" title="Toggle infinite scroll">
+            <div class="toggle-switch" id="infinite-scroll-toggle">
+              <div class="toggle-knob"></div>
+            </div>
+            <span>Infinite Scroll</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="product-grid" id="product-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px 0">
+          <div class="spinner"></div>
+          <p style="color:var(--text-muted);margin-top:16px">Loading merch...</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="product-modal-overlay">
+  <div class="modal" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+    <div class="modal-header">
+      <h2 class="modal-title" id="product-modal-title">Product Details</h2>
+      <button class="modal-close" id="product-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="product-modal-body">
+      <div style="text-align:center;padding:60px"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/cart.js"></script>
+<script>
+  $(document).ready(function () {
+    window.renderNavbar({ showCart: true, showSearch: true });
+  });
+</script>
+</body>
+</html>

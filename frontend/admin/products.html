@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage Metallica Merch Store products — add, edit, delete with image uploads.">
+  <title>Products — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body data-page="products">
+
+<div class="admin-layout">
+  <main class="admin-main">
+    <div class="page-header">
+      <div>
+        <h1 class="page-header-title">Products</h1>
+        <p class="page-header-subtitle">Manage your Metallica merch catalog</p>
+      </div>
+      <button class="btn btn-primary" id="add-product-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Product
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="datatable-wrap">
+          <table id="products-table" class="dataTable" style="width:100%">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Product Form Modal -->
+<div class="modal-overlay" id="product-form-modal">
+  <div id="product-modal-overlay-bg" style="position:absolute;inset:0;cursor:pointer"></div>
+  <div class="modal" style="position:relative;z-index:1">
+    <div class="modal-header">
+      <h2 class="modal-title" id="product-modal-title">Add Product</h2>
+      <button class="modal-close" id="product-form-modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="product-form" enctype="multipart/form-data">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="edit-name">Product Name *</label>
+            <input type="text" id="edit-name" name="name" class="form-control" placeholder="Master of Puppets Tour Tee" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-price">Price ($) *</label>
+            <input type="number" id="edit-price" name="price" class="form-control" placeholder="39.99" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-stock">Stock Quantity *</label>
+            <input type="number" id="edit-stock" name="stock" class="form-control" placeholder="100" min="0" required>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="edit-description">Description</label>
+            <textarea id="edit-description" name="description" class="form-control" placeholder="Product description..." rows="4"></textarea>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Product Images (up to 5)</label>
+            <div class="image-upload-zone" id="image-upload-zone" onclick="document.getElementById('edit-images').click()">
+              <div style="font-size:32px;margin-bottom:8px">📸</div>
+              <div style="font-weight:600;color:var(--text-secondary)">Click to upload images</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px">JPG, PNG, GIF, WebP — max 5MB each</div>
+            </div>
+            <input type="file" id="edit-images" name="images" multiple accept="image/*" style="display:none">
+            <div class="image-preview-grid" id="image-preview-grid"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding:0;border:none;margin-top:24px">
+          <button type="button" class="btn btn-secondary" onclick="$('#product-form-modal').removeClass('open')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Product 🤘</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+  $(document).ready(function () {
+    window.renderNavbar({ showCart: false, showSearch: false });
+  });
+</script>
+</body>
+</html>
