@@ -147,7 +147,7 @@ exports.updateTransactionStatus = async (req, res) => {
     if (newStatus === 'completed' && previousStatus !== 'completed') {
       try {
         let pdfBuffer = await generateReceipt(transaction);
-        await sendReceiptEmail(transaction.user.email, pdfBuffer); // Wait, prompt specifies emailService.sendReceipt(user.email, pdfBuffer)
+        await sendReceiptEmail(transaction.user, transaction, pdfBuffer);
       } catch (emailErr) {
         console.error('Email or PDF error:', emailErr.message);
       }

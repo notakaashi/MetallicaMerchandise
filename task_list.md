@@ -37,7 +37,7 @@ This task list is based on the combined functional requirements from both the pr
 ## Member B: Frontend, UI/UX, & jQuery Integrations
 
 **1. UI/UX Design & Responsiveness (unit test 1 - 20pts)**
-- [ ] Implement a strict, modern, mobile-responsive UI/UX design across the entire application using standard CSS/frameworks.
+- [x] Implement a strict, modern, mobile-responsive UI/UX design across the entire application using standard CSS/frameworks.
 
 **2. Forms & jQuery Validation (quiz 4 - 15pts)**
 - [x] Build User Registration and Login forms.
@@ -53,16 +53,16 @@ This task list is based on the combined functional requirements from both the pr
 - [x] Create a frontend file upload interface capable of handling multiple file selections for a single product.
 
 **5. Storefront Dynamic Loading (unit test 2 - 35pts)**
-- [ ] Build the customer-facing product display page.
-- [ ] Implement custom **jQuery pagination** for the product catalog. (Do not use DataTables here).
-- [ ] Implement a custom **jQuery infinite scroll** mechanic for dynamically loading products. (Do not use DataTables here).
+- [x] Build the customer-facing product display page.
+- [x] Implement custom **jQuery pagination** for the product catalog. (Do not use DataTables here).
+- [x] Implement a custom **jQuery infinite scroll** mechanic for dynamically loading products. (Do not use DataTables here).
 
 **6. Search & Autocomplete (quiz 5 - 15pts)**
-- [ ] Implement a search bar on the homepage.
-- [ ] Bind the search bar to a **jQuery UI autocomplete** (or similar jQuery-based API) that fetches live results from the backend.
+- [x] Implement a search bar on the homepage.
+- [x] Bind the search bar to a **jQuery UI autocomplete** (or similar jQuery-based API) that fetches live results from the backend.
 
 **7. Shopping Cart & Checkout (Term Test - 25pts)**
-- [ ] Build the frontend checkout and order placement system utilizing asynchronous jQuery AJAX requests to communicate with the transaction API.
+- [x] Build the frontend checkout and order placement system utilizing asynchronous jQuery AJAX requests to communicate with the transaction API.
 
 **8. Analytical Dashboards (quiz 7 - 15pts)**
-- [ ] Integrate three distinct JavaScript charts on the Admin Dashboard: a **Bar chart**, a **Line chart**, and a **Pie chart** to visualize the e-commerce data fetched from the API.
+- [x] Integrate three distinct JavaScript charts on the Admin Dashboard: a **Bar chart**, a **Line chart**, and a **Pie chart** to visualize the e-commerce data fetched from the API.
