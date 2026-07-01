@@ -197,27 +197,33 @@ function initUsersTable() {
     $('#user-form-modal').removeClass('open');
   });
 
-  $(document).on('submit', '#user-form', function (e) {
-    e.preventDefault();
-    const data = {
-      name: $('#edit-user-name').val().trim(),
-      email: $('#edit-user-email').val().trim(),
-      role: $('#edit-user-role').val(),
-      status: $('#edit-user-status').val()
-    };
-    if (!editingUserId) data.password = $('#edit-user-password').val();
+  $('#user-form').validate({
+    rules: {
+      name: { required: true, minlength: 2 },
+      email: { required: true, email: true },
+      password: { minlength: 6 },
+    },
+    submitHandler: function (form) {
+      const data = {
+        name: $('#edit-user-name').val().trim(),
+        email: $('#edit-user-email').val().trim(),
+        role: $('#edit-user-role').val(),
+        status: $('#edit-user-status').val()
+      };
+      if (!editingUserId) data.password = $('#edit-user-password').val();
 
-    const url    = editingUserId ? `${API_BASE}/api/users/${editingUserId}` : `${API_BASE}/api/users`;
-    const method = editingUserId ? 'PUT' : 'POST';
+      const url    = editingUserId ? `${API_BASE}/api/users/${editingUserId}` : `${API_BASE}/api/users`;
+      const method = editingUserId ? 'PUT' : 'POST';
 
-    $.ajax({ url, method, contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify(data),
-      success: () => {
-        window.showToast(editingUserId ? 'User updated!' : 'User created!', 'success');
-        $('#user-form-modal').removeClass('open');
-        initUsersTable();
-      },
-      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save user', 'error'),
-    });
+      $.ajax({ url, method, contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify(data),
+        success: () => {
+          window.showToast(editingUserId ? 'User updated!' : 'User created!', 'success');
+          $('#user-form-modal').removeClass('open');
+          initUsersTable();
+        },
+        error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save user', 'error'),
+      });
+    }
   });
 
   $(document).on('click', '.delete-user-btn', function () {
@@ -321,15 +327,22 @@ function initProductsTable() {
     $('<input>').attr({ type: 'hidden', name: 'removeImages[]', value: imgId }).appendTo('#product-form');
   });
 
-  $(document).on('submit', '#product-form', function (e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const url    = editingProductId ? `${API_BASE}/api/products/${editingProductId}` : `${API_BASE}/api/products`;
-    const method = editingProductId ? 'PUT' : 'POST';
-    $.ajax({ url, method, headers: window.Auth.authHeaders(), data: formData, processData: false, contentType: false,
-      success: () => { window.showToast(editingProductId ? 'Product updated!' : 'Product created!', 'success'); $('#product-form-modal').removeClass('open'); editingProductId = null; initProductsTable(); },
-      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save product', 'error'),
-    });
+  $('#product-form').validate({
+    rules: {
+      name: { required: true },
+      price: { required: true, number: true, min: 0 },
+      category: { required: true },
+      stock: { required: true, digits: true, min: 0 }
+    },
+    submitHandler: function (form) {
+      const formData = new FormData(form);
+      const url    = editingProductId ? `${API_BASE}/api/products/${editingProductId}` : `${API_BASE}/api/products`;
+      const method = editingProductId ? 'PUT' : 'POST';
+      $.ajax({ url, method, headers: window.Auth.authHeaders(), data: formData, processData: false, contentType: false,
+        success: () => { window.showToast(editingProductId ? 'Product updated!' : 'Product created!', 'success'); $('#product-form-modal').removeClass('open'); editingProductId = null; initProductsTable(); },
+        error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save product', 'error'),
+      });
+    }
   });
 }
 

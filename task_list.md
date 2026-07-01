@@ -14,23 +14,23 @@ This task list is based on the combined functional requirements from both the pr
 - [x] Save the generated token directly into the `users` table.
 
 **3. Security & Route Protection (quiz 6 - 15pts)**
-- [ ] Create custom Node.js middleware to check user roles.
-- [ ] Protect all Admin CRUD APIs to ensure only 'admin' roles can access them.
+- [x] Create custom Node.js middleware to check user roles.
+- [x] Protect all Admin CRUD APIs to ensure only 'admin' roles can access them.
 
 **4. Products CRUD & File Uploads (mp1/mp2 - 40pts | mp3 - 20pts)**
-- [ ] Build Node.js CRUD APIs for Metallica merchandise.
-- [ ] Implement multi-photo upload capability on product creation (saving multiple image paths for one product).
+- [x] Build Node.js CRUD APIs for Metallica merchandise.
+- [x] Implement multi-photo upload capability on product creation (saving multiple image paths for one product).
 
 **5. Transactions CRUD API (Term Test - 25pts)**
-- [ ] Build the dedicated Node.js CRUD API to manage customer transactions and orders.
+- [x] Build the dedicated Node.js CRUD API to manage customer transactions and orders.
 
 **6. Notifications & PDFs (Term Test - 15pts)**
-- [ ] Implement an automated email notification system that triggers when an admin updates a transaction status.
-- [ ] Generate a PDF receipt containing a detailed order breakdown (quantities, totals) and attach it to the automated email.
+- [x] Implement an automated email notification system that triggers when an admin updates a transaction status.
+- [x] Generate a PDF receipt containing a detailed order breakdown (quantities, totals) and attach it to the automated email.
 
 **7. Search & Analytics Data Providers (quiz 5 - 15pts | quiz 7 - 15pts)**
-- [ ] Build an API endpoint specifically to feed data for the homepage search/autocomplete feature.
-- [ ] Build API endpoints to supply aggregated data for the admin analytics charts (bar, line, and pie).
+- [x] Build an API endpoint specifically to feed data for the homepage search/autocomplete feature.
+- [x] Build API endpoints to supply aggregated data for the admin analytics charts (bar, line, and pie).
 
 ---
 
@@ -40,17 +40,17 @@ This task list is based on the combined functional requirements from both the pr
 - [ ] Implement a strict, modern, mobile-responsive UI/UX design across the entire application using standard CSS/frameworks.
 
 **2. Forms & jQuery Validation (quiz 4 - 15pts)**
-- [ ] Build User Registration and Login forms.
-- [ ] Build Product CRUD forms and Checkout interfaces.
-- [ ] Implement strict frontend **jQuery validation** for all forms (do not rely solely on HTML5 validation attributes).
+- [x] Build User Registration and Login forms.
+- [x] Build Product CRUD forms and Checkout interfaces.
+- [x] Implement strict frontend **jQuery validation** for all forms (do not rely solely on HTML5 validation attributes).
 
 **3. User Management Interface (mp6 - 20pts)**
-- [ ] Build the Admin view to list all registered users inside a **jQuery DataTable**.
-- [ ] Integrate AJAX actions to allow admins to update user roles and deactivate user accounts.
+- [x] Build the Admin view to list all registered users inside a **jQuery DataTable**.
+- [x] Integrate AJAX actions to allow admins to update user roles and deactivate user accounts.
 
 **4. Products & Upload UI (mp3 - 20pts | mp4)**
-- [ ] Build the Admin Merchandise Product interface using **jQuery DataTables**.
-- [ ] Create a frontend file upload interface capable of handling multiple file selections for a single product.
+- [x] Build the Admin Merchandise Product interface using **jQuery DataTables**.
+- [x] Create a frontend file upload interface capable of handling multiple file selections for a single product.
 
 **5. Storefront Dynamic Loading (unit test 2 - 35pts)**
 - [ ] Build the customer-facing product display page.
