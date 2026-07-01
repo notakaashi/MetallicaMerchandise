@@ -395,7 +395,6 @@ function initTransactionsTable() {
     $.ajax({ url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
       success: () => {
         window.showToast(`Order #${id} marked as ${status}`, 'success');
-        if (status === 'completed') window.showToast('Receipt email sent to customer', 'info');
         const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
         $select.css('border-color', colors[status] || '');
       },

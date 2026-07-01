@@ -55,12 +55,22 @@ exports.createTransaction = async (req, res) => {
     }
 
     let finalTransaction = await Transaction.findByPk(newTransaction.id, {
-      include: [{
-        model: TransactionItem,
-        as: 'items',
-        include: [{ model: Product, as: 'product' }],
-      }],
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+        {
+          model: TransactionItem,
+          as: 'items',
+          include: [{ model: Product, as: 'product' }],
+        }
+      ],
     });
+
+    try {
+      let pdfBuffer = await generateReceipt(finalTransaction);
+      await sendReceiptEmail(finalTransaction.user, finalTransaction, pdfBuffer);
+    } catch (emailErr) {
+      console.error('Email or PDF error during checkout:', emailErr.message);
+    }
 
     res.status(201).json({ message: 'Order placed successfully', transaction: finalTransaction });
   } catch (err) {
@@ -144,14 +154,7 @@ exports.updateTransactionStatus = async (req, res) => {
       }
     }
 
-    if (newStatus === 'completed' && previousStatus !== 'completed') {
-      try {
-        let pdfBuffer = await generateReceipt(transaction);
-        await sendReceiptEmail(transaction.user, transaction, pdfBuffer);
-      } catch (emailErr) {
-        console.error('Email or PDF error:', emailErr.message);
-      }
-    }
+    // Email is now sent during checkout, so we don't send it here anymore.
 
     res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status } });
   } catch (err) {
