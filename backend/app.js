@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
 const { sequelize } = require('./src/models');
 
 const PORT = process.env.PORT || 3000;
-sequelize.sync({ alter: true }).then(() => {
+sequelize.authenticate().then(() => {
   app.listen(PORT, () => {
     console.log(`Metallica Merch Store API running on http://localhost:${PORT}`);
     console.log(`   Frontend: open frontend/index.html in your browser`);
