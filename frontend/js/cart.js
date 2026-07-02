@@ -194,7 +194,7 @@ function renderPagination(pagination) {
   if (infiniteScrollEnabled) {
     $('#pagination').html(
       pagination.page < pagination.pages
-        ? `<button id="load-more-btn" class="btn btn-secondary btn-lg">Load More</button>`
+        ? `<div style="text-align:center;padding:20px;color:var(--text-muted)">Scroll for more...</div>`
         : `<p style="color:var(--text-muted);text-align:center">You've seen it all!</p>`
     );
     return;
@@ -430,9 +430,19 @@ $(document).ready(function () {
     window.scrollTo({ top: document.querySelector('.catalog-section')?.offsetTop - 80 || 0, behavior: 'smooth' });
   });
 
-  // Load more
-  $(document).on('click', '#load-more-btn', function () {
-    if (currentPage < totalPages) window.loadProducts(currentPage + 1, true);
+  // Infinite Scroll Listener (Throttled)
+  let scrollTimeout;
+  $(window).on('scroll', function () {
+    if (!infiniteScrollEnabled) return;
+    
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+      if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
+        if (!isLoading && currentPage < totalPages) {
+          window.loadProducts(currentPage + 1, true);
+        }
+      }
+    }, 150);
   });
 
   // Infinite scroll toggle

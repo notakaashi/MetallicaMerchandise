@@ -2,40 +2,52 @@ $(document).ready(function () {
   let currentCategory = 'all';
   let currentSort = 'newest';
   let currentPage = 1;
+  let totalPages = 1;
+  let isLoading = false;
+  let infiniteScrollEnabled = true;
   let searchQuery = new URLSearchParams(window.location.search).get('q') || '';
 
   if (searchQuery) {
     $('#navbar-search').val(searchQuery);
   }
 
-  function fetchProducts() {
+  function fetchProducts(append = false) {
+    if (isLoading) return;
+    isLoading = true;
+
     let url = `${API_BASE}/api/products?page=${currentPage}&limit=12&sort=${currentSort}`;
     if (currentCategory !== 'all') url += `&category=${currentCategory}`;
     if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
 
-    $('#products-grid').html('<div style="grid-column:1/-1;text-align:center;color:#8a8a8a;padding:40px">Loading products...</div>');
+    if (!append) {
+      $('#products-grid').html('<div style="grid-column:1/-1;text-align:center;color:#8a8a8a;padding:40px">Loading products...</div>');
+    }
     
     $.ajax({
       url: url,
       method: 'GET',
       success: function(data) {
-        renderProducts(data.products);
+        totalPages = data.pagination.pages;
+        renderProducts(data.products, append);
         renderPagination(data.pagination);
-        $('#result-count').text(`Showing ${data.products.length} of ${data.pagination.total} products`);
+        $('#result-count').text(`Showing ${$('#products-grid .product-card').length} of ${data.pagination.total} products`);
       },
       error: function() {
-        $('#products-grid').html('<div class="empty-state">Failed to load products. Please try again later.</div>');
+        if (!append) $('#products-grid').html('<div class="empty-state">Failed to load products. Please try again later.</div>');
         $('#result-count').text('');
         $('#pagination').html('');
+      },
+      complete: function() {
+        isLoading = false;
       }
     });
   }
 
-  function renderProducts(products) {
+  function renderProducts(products, append = false) {
     const $grid = $('#products-grid');
-    $grid.empty();
+    if (!append) $grid.empty();
 
-    if (products.length === 0) {
+    if (products.length === 0 && !append) {
       $grid.html('<div class="empty-state">No products found in this category.</div>');
       return;
     }
@@ -70,6 +82,16 @@ $(document).ready(function () {
   function renderPagination(pg) {
     const $pag = $('#pagination');
     $pag.empty();
+    
+    if (infiniteScrollEnabled) {
+      $pag.html(
+        pg.page < pg.pages
+          ? `<div style="text-align:center;padding:20px;color:#8a8a8a">Scroll for more...</div>`
+          : `<p style="color:#8a8a8a;text-align:center">You've seen it all!</p>`
+      );
+      return;
+    }
+
     if (pg.pages <= 1) return;
 
     $pag.append(`<button class="page-btn prev-page" ${pg.page === 1 ? 'disabled' : ''}>&laquo;</button>`);
@@ -80,6 +102,21 @@ $(document).ready(function () {
   }
 
   // Event Listeners
+  let scrollTimeout;
+  $(window).on('scroll', function () {
+    if (!infiniteScrollEnabled) return;
+    
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+      if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
+        if (!isLoading && currentPage < totalPages) {
+          currentPage++;
+          fetchProducts(true);
+        }
+      }
+    }, 150);
+  });
+
   $('.category-pill').on('click', function() {
     $('.category-pill').removeClass('active');
     $(this).addClass('active');

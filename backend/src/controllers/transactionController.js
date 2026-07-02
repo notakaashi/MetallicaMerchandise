@@ -154,8 +154,15 @@ exports.updateTransactionStatus = async (req, res) => {
       }
     }
 
-    // Email is now sent during checkout, so we don't send it here anymore.
-
+    // Send email + PDF receipt only when status transitions to completed
+    if (newStatus === 'completed' && previousStatus !== 'completed') {
+      try {
+        let pdfBuffer = await generateReceipt(transaction);
+        await sendReceiptEmail(transaction.user, transaction, pdfBuffer);
+      } catch (emailErr) {
+        console.error('Email or PDF error during status update:', emailErr.message);
+      }
+    }
     res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status } });
   } catch (err) {
     console.error('Update status error:', err);
