@@ -109,7 +109,41 @@ window.renderNavbar = function (opts = {}) {
     </button>` : '';
 
   const productsLinkHtml = !isAdminPage ? `
-    <a href="/products.html" style="margin-left:32px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">PRODUCTS</a>
+    <style>
+      .nav-dropdown { position: relative; display: flex; align-items: center; margin-left: 32px; height: 100%; padding: 10px 0; cursor: pointer; }
+      .nav-dropdown-content { 
+        display: none; position: absolute; top: 100%; left: -16px; min-width: 180px; 
+        background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; border-radius: 4px; overflow: hidden; margin-top: -5px;
+      }
+      .nav-dropdown:hover .nav-dropdown-content { display: block; }
+      .nav-dropdown-content a {
+        color: #e0e0e0; padding: 12px 16px; text-decoration: none; display: block; 
+        font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
+        transition: background 0.2s, color 0.2s;
+      }
+      .nav-dropdown-content a:hover { background: var(--accent-red); color: #fff; }
+      .nav-dropdown-btn {
+        color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 14px; 
+        transition: color 0.2s; display: flex; align-items: center; gap: 4px;
+      }
+      .nav-dropdown:hover .nav-dropdown-btn { color: var(--accent-red); }
+    </style>
+    <div class="nav-dropdown">
+      <a href="/products.html" class="nav-dropdown-btn">
+        PRODUCTS
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </a>
+      <div class="nav-dropdown-content">
+        <a href="/products.html?category=shirts">T-Shirts</a>
+        <a href="/products.html?category=hoodies">Hoodies</a>
+        <a href="/products.html?category=posters">Posters</a>
+        <a href="/products.html?category=vinyl">Vinyls</a>
+        <a href="/products.html?category=accessories">Accessories</a>
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
+        <a href="/products.html">All Products</a>
+      </div>
+    </div>
     <a href="/about.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">ABOUT US</a>
     <a href="/contact.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">CONTACT</a>
   ` : '';
