@@ -95,10 +95,10 @@ $(document).ready(function () {
         : `<span class="stock-badge out-stock">Out of Stock</span>`;
       
       let html = `
-        <div class="product-card" data-product='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
-          <div class="product-img-wrap open-modal">
+        <div class="product-card" data-id="${p.id}" data-product='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
+          <a href="/product?id=${p.id}" class="product-img-wrap" style="display:block">
             <img src="${imgPath}" class="product-img" alt="${p.name}">
-          </div>
+          </a>
           <div class="product-info">
             <a href="/product?id=${p.id}" class="product-name" style="text-decoration:none;color:inherit;">${p.name}</a>
             <div class="product-price">₱${parseFloat(p.price).toFixed(2)}</div>
