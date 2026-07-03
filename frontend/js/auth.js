@@ -110,6 +110,8 @@ window.renderNavbar = function (opts = {}) {
 
   const productsLinkHtml = !isAdminPage ? `
     <a href="/products.html" style="margin-left:32px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">PRODUCTS</a>
+    <a href="/about.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">ABOUT US</a>
+    <a href="/contact.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">CONTACT</a>
   ` : '';
 
   const navHtml = `
