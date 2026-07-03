@@ -114,7 +114,7 @@ window.Cart = {
 let currentPage = 1;
 let currentSearch = '';
 let totalPages = 1;
-let infiniteScrollEnabled = false;
+let infiniteScrollEnabled = true;
 let isLoading = false;
 
 window.loadProducts = function (page = 1, append = false) {
