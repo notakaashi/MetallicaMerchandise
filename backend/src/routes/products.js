@@ -3,8 +3,10 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const auth = require('../middleware/auth');
 const adminMiddleware = require('../middleware/admin');
 const productController = require('../controllers/productController');
+const reviewController = require('../controllers/reviewController');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -39,6 +41,10 @@ router.get('/', productController.getAllProducts);
 router.get('/search', productController.searchProducts);
 router.get('/autocomplete', productController.autocompleteProducts);
 router.get('/:id', productController.getProduct);
+
+router.get('/:id/reviews', reviewController.getProductReviews);
+router.get('/:id/reviews/eligibility', auth, reviewController.checkEligibility);
+router.post('/:id/reviews', auth, reviewController.createReview);
 
 router.post('/', adminMiddleware, upload.array('images', 5), productController.createProduct);
 router.put('/:id', adminMiddleware, upload.array('images', 5), productController.updateProduct);

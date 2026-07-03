@@ -169,7 +169,7 @@ window.loadProducts = function (page = 1, append = false) {
             </div>
           </div>
           <div class="product-card-body">
-            <div class="product-card-name">${p.name}</div>
+            <a href="/product.html?id=${p.id}" class="product-card-name" style="text-decoration:none;color:inherit;display:block;">${p.name}</a>
             <div class="product-card-price">₱${parseFloat(p.price).toFixed(2)}</div>
             <div style="margin-top:6px">${stockBadge}</div>
           </div>
@@ -388,6 +388,7 @@ $(document).ready(function () {
   // Quick view / product card click
   $(document).on('click', '.quick-view-btn, .product-card', function (e) {
     if ($(e.target).hasClass('add-to-cart-btn') || $(e.target).closest('.add-to-cart-btn').length) return;
+    if ($(e.target).hasClass('product-card-name') || $(e.target).closest('.product-card-name').length) return;
     const id = $(this).data('id') || $(this).closest('.product-card').data('id');
     if (id) window.openProductModal(id);
   });

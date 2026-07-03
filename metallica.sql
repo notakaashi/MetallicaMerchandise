@@ -6,6 +6,7 @@ USE `metallica_merch`;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Drop tables if they exist
+DROP TABLE IF EXISTS `reviews`;
 DROP TABLE IF EXISTS `transaction_items`;
 DROP TABLE IF EXISTS `transactions`;
 DROP TABLE IF EXISTS `product_images`;
@@ -144,3 +145,23 @@ INSERT INTO `transaction_items` (`id`, `transaction_id`, `product_id`, `quantity
 (1, 1, 1, 1, 1800.00, NOW(), NOW()),
 (2, 1, 3, 1, 500.00, NOW(), NOW()),
 (3, 2, 2, 1, 3500.00, NOW(), NOW());
+
+-- Table structure for `reviews`
+CREATE TABLE `reviews` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `product_id` bigint UNSIGNED NOT NULL,
+  `transaction_id` bigint UNSIGNED NOT NULL,
+  `rating` tinyint NOT NULL,
+  `comment` text,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_product_review` (`user_id`,`product_id`),
+  KEY `product_id` (`product_id`),
+  KEY `transaction_id` (`transaction_id`),
+  CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reviews_chk_rating` CHECK (`rating` BETWEEN 1 AND 5)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
