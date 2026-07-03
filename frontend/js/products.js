@@ -1,14 +1,51 @@
 $(document).ready(function () {
-  let currentCategory = 'all';
+  let urlParams = new URLSearchParams(window.location.search);
+  let currentCategory = urlParams.get('category') || 'all';
   let currentSort = 'newest';
   let currentPage = 1;
   let totalPages = 1;
   let isLoading = false;
-  let searchQuery = new URLSearchParams(window.location.search).get('q') || '';
+  let searchQuery = urlParams.get('q') || '';
 
   if (searchQuery) {
     $('#navbar-search').val(searchQuery);
   }
+
+  // Set the correct active pill based on the URL parameter
+  $('.category-pill').removeClass('active');
+  let activePill = $('.category-pill[data-category="' + currentCategory + '"]');
+  if (activePill.length) {
+    activePill.addClass('active');
+  } else {
+    $('.category-pill[data-category="all"]').addClass('active');
+  }
+
+  // Intercept dropdown clicks to update seamlessly if we are already on products page
+  $(document).on('click', '.nav-dropdown-content a', function(e) {
+    e.preventDefault();
+    let href = $(this).attr('href');
+    
+    // Update URL history
+    window.history.pushState({}, '', href);
+    
+    // Extract category
+    let params = new URLSearchParams(href.split('?')[1] || '');
+    let cat = params.get('category') || 'all';
+    
+    // Update active pill
+    $('.category-pill').removeClass('active');
+    let newActive = $('.category-pill[data-category="' + cat + '"]');
+    if (newActive.length) {
+      newActive.addClass('active');
+    } else {
+      $('.category-pill[data-category="all"]').addClass('active');
+    }
+    
+    // Fetch products
+    currentCategory = cat;
+    currentPage = 1;
+    fetchProducts();
+  });
 
   function fetchProducts(append = false) {
     if (isLoading) return;
