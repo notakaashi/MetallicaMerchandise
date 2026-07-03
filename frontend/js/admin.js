@@ -11,9 +11,9 @@ $(document).ready(function () {
   const page = $('body').data('page');
   if (window.renderAdminSidebar) window.renderAdminSidebar(page);
 
-  if (page === 'dashboard')    loadDashboard();
-  if (page === 'users')        initUsersTable();
-  if (page === 'products')     initProductsTable();
+  if (page === 'dashboard') loadDashboard();
+  if (page === 'users') initUsersTable();
+  if (page === 'products') initProductsTable();
   if (page === 'transactions') initTransactionsTable();
 });
 
@@ -106,12 +106,12 @@ function renderPieChart(statusData) {
   if (!ctx) return;
   const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
   new Chart(ctx, {
-    type: 'doughnut',
+    type: 'pie',
     data: {
       labels: statusData.map(s => s.status.charAt(0).toUpperCase() + s.status.slice(1)),
       datasets: [{ data: statusData.map(s => s.count), backgroundColor: statusData.map(s => colors[s.status] || '#8a8a8a'), borderColor: '#1e1e1e', borderWidth: 3, hoverOffset: 8 }],
     },
-    options: chartDefaults({ cutout: '65%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#a0a0a0', padding: 16, usePointStyle: true } } } }),
+    options: chartDefaults({ plugins: { legend: { display: true, position: 'bottom', labels: { color: '#a0a0a0', padding: 16, usePointStyle: true } } } }),
   });
 }
 
@@ -189,7 +189,7 @@ function initUsersTable() {
       $('#role-option-customer').show();
       $('#edit-user-role').val(user.role);
     }
-    
+
     $('#user-form-modal').addClass('open');
   });
 
@@ -212,10 +212,11 @@ function initUsersTable() {
       };
       if (!editingUserId) data.password = $('#edit-user-password').val();
 
-      const url    = editingUserId ? `${API_BASE}/api/users/${editingUserId}` : `${API_BASE}/api/users`;
+      const url = editingUserId ? `${API_BASE}/api/users/${editingUserId}` : `${API_BASE}/api/users`;
       const method = editingUserId ? 'PUT' : 'POST';
 
-      $.ajax({ url, method, contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify(data),
+      $.ajax({
+        url, method, contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify(data),
         success: () => {
           window.showToast(editingUserId ? 'User updated!' : 'User created!', 'success');
           $('#user-form-modal').removeClass('open');
@@ -230,9 +231,10 @@ function initUsersTable() {
     const id = $(this).data('id');
     const name = $(this).data('name');
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
-    $.ajax({ url: `${API_BASE}/api/users/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
+    $.ajax({
+      url: `${API_BASE}/api/users/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
       success: () => { window.showToast('User deleted', 'success'); initUsersTable(); },
-      error:   (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to delete user', 'error'),
+      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to delete user', 'error'),
     });
   });
 }
@@ -295,7 +297,8 @@ function initProductsTable() {
   $(document).on('click', '.delete-product-btn', function () {
     const id = $(this).data('id');
     if (!confirm('Delete this product? This cannot be undone.')) return;
-    $.ajax({ url: `${API_BASE}/api/products/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
+    $.ajax({
+      url: `${API_BASE}/api/products/${id}`, method: 'DELETE', headers: window.Auth.authHeaders(),
       success: () => { window.showToast('Product deleted', 'success'); initProductsTable(); },
       error: (xhr) => {
         if (xhr.status === 200 || xhr.status === 204) {
@@ -336,9 +339,10 @@ function initProductsTable() {
     },
     submitHandler: function (form) {
       const formData = new FormData(form);
-      const url    = editingProductId ? `${API_BASE}/api/products/${editingProductId}` : `${API_BASE}/api/products`;
+      const url = editingProductId ? `${API_BASE}/api/products/${editingProductId}` : `${API_BASE}/api/products`;
       const method = editingProductId ? 'PUT' : 'POST';
-      $.ajax({ url, method, headers: window.Auth.authHeaders(), data: formData, processData: false, contentType: false,
+      $.ajax({
+        url, method, headers: window.Auth.authHeaders(), data: formData, processData: false, contentType: false,
         success: () => { window.showToast(editingProductId ? 'Product updated!' : 'Product created!', 'success'); $('#product-form-modal').removeClass('open'); editingProductId = null; initProductsTable(); },
         error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save product', 'error'),
       });
@@ -367,7 +371,7 @@ function initTransactionsTable() {
             render: (d, _, row) => {
               const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
               return `<select class="form-control status-select" data-id="${row.id}" style="padding:5px 10px;font-size:13px;border-color:${colors[d]}">
-                <option value="pending"   ${d === 'pending'   ? 'selected' : ''}>Pending</option>
+                <option value="pending"   ${d === 'pending' ? 'selected' : ''}>Pending</option>
                 <option value="completed" ${d === 'completed' ? 'selected' : ''}>Completed</option>
                 <option value="cancelled" ${d === 'cancelled' ? 'selected' : ''}>Cancelled</option>
               </select>`;
@@ -392,7 +396,8 @@ function initTransactionsTable() {
 
   $(document).on('change', '.status-select', function () {
     const id = $(this).data('id'), status = $(this).val(), $select = $(this);
-    $.ajax({ url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
+    $.ajax({
+      url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
       success: () => {
         window.showToast(`Order #${id} marked as ${status}`, 'success');
         const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
