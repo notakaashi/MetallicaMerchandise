@@ -36,8 +36,12 @@ exports.createTransaction = async (req, res) => {
 
     let newTransaction = await Transaction.create({
       user_id: req.user.id,
-      status: 'pending',
       total_price: totalPrice.toFixed(2),
+      status: 'completed', // auto-complete for demo
+      full_name: req.body.full_name,
+      address: req.body.address,
+      city: req.body.city,
+      zip: req.body.zip,
     });
 
     for (let i = 0; i < itemDetails.length; i++) {
@@ -167,5 +171,35 @@ exports.updateTransactionStatus = async (req, res) => {
   } catch (err) {
     console.error('Update status error:', err);
     res.status(500).json({ error: 'Failed to update status' });
+  }
+};
+
+exports.getTransactionById = async (req, res) => {
+  try {
+    let transaction = await Transaction.findByPk(req.params.id, {
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+        {
+          model: TransactionItem,
+          as: 'items',
+          include: [{ model: Product, as: 'product', include: [{ model: ProductImage, as: 'images' }] }],
+        },
+      ],
+    });
+
+    if (transaction === null) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    let isOwner = transaction.user_id === req.user.id;
+    let isAdmin = req.user.role === 'admin';
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: 'You do not have permission to view this order' });
+    }
+
+    res.json({ transaction: transaction });
+  } catch (err) {
+    console.error('Get transaction error:', err);
+    res.status(500).json({ error: 'Failed to fetch order' });
   }
 };

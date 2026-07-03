@@ -17,6 +17,22 @@ const Transaction = sequelize.define('Transaction', {
       type: DataTypes.ENUM('pending', 'completed', 'cancelled'),
       defaultValue: 'pending',
     },
+    full_name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    zip: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     total_price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

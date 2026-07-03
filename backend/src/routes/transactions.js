@@ -6,6 +6,7 @@ const ctrl = require('../controllers/transactionController');
 
 router.post('/', auth, ctrl.createTransaction);
 router.get('/my', auth, ctrl.getMyTransactions);
+router.get('/:id', auth, ctrl.getTransactionById);
 router.get('/', admin, ctrl.getAllTransactions);
 router.patch('/:id/status', admin, ctrl.updateTransactionStatus);
 

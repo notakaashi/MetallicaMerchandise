@@ -323,7 +323,9 @@ window.loadMyOrders = function () {
           <div class="order-card">
             <div class="order-card-header">
               <div>
-                <div class="order-id">Order <span>#${tx.id}</span></div>
+                <a href="/order?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
+                  <div class="order-id">Order <span>#${tx.id}</span></div>
+                </a>
                 <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
               </div>
               <span class="badge ${statusBadge}">${tx.status}</span>
@@ -495,7 +497,13 @@ $(document).ready(function () {
           method: 'POST',
           contentType: 'application/json',
           headers: window.Auth.authHeaders(),
-          data: JSON.stringify({ items: cartItems.map(i => ({ product_id: i.id, quantity: i.quantity })) }),
+          data: JSON.stringify({ 
+            items: cartItems.map(i => ({ product_id: i.id, quantity: i.quantity })),
+            full_name: $('#checkout-form input[name="full_name"]').val(),
+            address: $('#checkout-form input[name="address"]').val(),
+            city: $('#checkout-form input[name="city"]').val(),
+            zip: $('#checkout-form input[name="zip"]').val()
+          }),
           success: function (data) {
             window.Cart.clear();
             window.showToast(`Order #${data.transaction.id} placed!`, 'success', 'Order Confirmed');
