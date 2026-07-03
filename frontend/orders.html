@@ -38,7 +38,7 @@
 <script>
   $(document).ready(function () {
     // Auth guard
-    if (!window.Auth.requireAuth('/login.html?redirect=/orders.html')) return;
+    if (!window.Auth.requireAuth('/login?redirect=/orders')) return;
     window.renderNavbar({ showCart: true, showSearch: false });
   });
 </script>

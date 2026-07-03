@@ -121,7 +121,7 @@
 <script>
   $(document).ready(function () {
     // Auth guard
-    if (!window.Auth.requireAuth('/login.html?redirect=/checkout.html')) return;
+    if (!window.Auth.requireAuth('/login?redirect=/checkout')) return;
     window.renderNavbar({ showCart: false, showSearch: false });
   });
 </script>

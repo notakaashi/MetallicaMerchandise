@@ -63,7 +63,7 @@ $(document).ready(function () {
             <img src="${imgPath}" class="product-img" alt="${p.name}">
           </div>
           <div class="product-info">
-            <a href="/product.html?id=${p.id}" class="product-name" style="text-decoration:none;color:inherit;">${p.name}</a>
+            <a href="/product?id=${p.id}" class="product-name" style="text-decoration:none;color:inherit;">${p.name}</a>
             <div class="product-price">₱${parseFloat(p.price).toFixed(2)}</div>
             <div class="product-footer">
               ${stockBadge}

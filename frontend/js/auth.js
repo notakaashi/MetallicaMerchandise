@@ -198,7 +198,7 @@ window.renderNavbar = function (opts = {}) {
     if (e.target && e.target.id === 'navbar-search' && e.key === 'Enter') {
       const q = e.target.value.trim();
       if (q) {
-        window.location.href = `/products.html?q=${encodeURIComponent(q)}`;
+        window.location.href = `/products?q=${encodeURIComponent(q)}`;
       }
     }
   });

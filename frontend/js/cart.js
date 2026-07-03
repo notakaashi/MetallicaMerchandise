@@ -169,7 +169,7 @@ window.loadProducts = function (page = 1, append = false) {
             </div>
           </div>
           <div class="product-card-body">
-            <a href="/product.html?id=${p.id}" class="product-card-name" style="text-decoration:none;color:inherit;display:block;">${p.name}</a>
+            <a href="/product?id=${p.id}" class="product-card-name" style="text-decoration:none;color:inherit;display:block;">${p.name}</a>
             <div class="product-card-price">₱${parseFloat(p.price).toFixed(2)}</div>
             <div style="margin-top:6px">${stockBadge}</div>
           </div>
@@ -385,12 +385,20 @@ $(document).ready(function () {
     window.Cart.add({ id: parseInt($(this).data('id')), name: $(this).data('name'), price: parseFloat($(this).data('price')), images: [] });
   });
 
-  // Quick view / product card click
-  $(document).on('click', '.quick-view-btn, .product-card', function (e) {
-    if ($(e.target).hasClass('add-to-cart-btn') || $(e.target).closest('.add-to-cart-btn').length) return;
-    if ($(e.target).hasClass('product-card-name') || $(e.target).closest('.product-card-name').length) return;
+  // Quick View button specifically — still opens the modal
+  $(document).on('click', '.quick-view-btn', function (e) {
+    e.stopPropagation();
     const id = $(this).data('id') || $(this).closest('.product-card').data('id');
     if (id) window.openProductModal(id);
+  });
+
+  // Clicking anywhere else on the card — navigate to the product page
+  $(document).on('click', '.product-card', function (e) {
+    if ($(e.target).closest('.add-to-cart-btn').length) return;
+    if ($(e.target).closest('.quick-view-btn').length) return;
+    if ($(e.target).closest('.product-card-name').length) return; // already an <a> tag to the same destination, let it navigate natively
+    const id = $(this).data('id');
+    if (id) window.location.href = `/product?id=${id}`;
   });
 
   // Product modal close
@@ -435,14 +443,14 @@ $(document).ready(function () {
       select: function (e, ui) {
         currentSearch = ui.item.value; currentPage = 1;
         if ($('#product-grid').length) window.loadProducts(1, false);
-        else window.location.href = `/index.html?q=${encodeURIComponent(ui.item.value)}`;
+        else window.location.href = `/index?q=${encodeURIComponent(ui.item.value)}`;
       },
     });
     $('#navbar-search').on('keydown', function (e) {
       if (e.key === 'Enter') {
         currentSearch = $(this).val().trim(); currentPage = 1;
         if ($('#product-grid').length) window.loadProducts(1, false);
-        else window.location.href = `/index.html?q=${encodeURIComponent(currentSearch)}`;
+        else window.location.href = `/index?q=${encodeURIComponent(currentSearch)}`;
       }
     });
   }
@@ -473,7 +481,7 @@ $(document).ready(function () {
       submitHandler: function () {
         if (!window.Auth.isLoggedIn()) {
           window.showToast('Please log in to complete checkout', 'warning');
-          window.location.href = '/login.html?redirect=/checkout.html';
+          window.location.href = '/login?redirect=/checkout';
           return;
         }
         const cartItems = window.Cart.get();
