@@ -4,7 +4,6 @@ $(document).ready(function () {
   let currentPage = 1;
   let totalPages = 1;
   let isLoading = false;
-  let infiniteScrollEnabled = true;
   let searchQuery = new URLSearchParams(window.location.search).get('q') || '';
 
   if (searchQuery) {
@@ -81,31 +80,16 @@ $(document).ready(function () {
 
   function renderPagination(pg) {
     const $pag = $('#pagination');
-    $pag.empty();
-    
-    if (infiniteScrollEnabled) {
-      $pag.html(
-        pg.page < pg.pages
-          ? `<div style="text-align:center;padding:20px;color:#8a8a8a">Scroll for more...</div>`
-          : `<p style="color:#8a8a8a;text-align:center">You've seen it all!</p>`
-      );
-      return;
-    }
-
-    if (pg.pages <= 1) return;
-
-    $pag.append(`<button class="page-btn prev-page" ${pg.page === 1 ? 'disabled' : ''}>&laquo;</button>`);
-    for (let i = 1; i <= pg.pages; i++) {
-      $pag.append(`<button class="page-btn num-page ${i === pg.page ? 'active' : ''}" data-page="${i}">${i}</button>`);
-    }
-    $pag.append(`<button class="page-btn next-page" ${pg.page === pg.pages ? 'disabled' : ''}>&raquo;</button>`);
+    $pag.html(
+      pg.page < pg.pages
+        ? `<div style="text-align:center;padding:20px;color:#8a8a8a">Scroll for more...</div>`
+        : `<p style="color:#8a8a8a;text-align:center">You've seen it all!</p>`
+    );
   }
 
   // Event Listeners
   let scrollTimeout;
   $(window).on('scroll', function () {
-    if (!infiniteScrollEnabled) return;
-    
     if (scrollTimeout) clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(function() {
       if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
@@ -129,20 +113,6 @@ $(document).ready(function () {
     currentSort = $(this).val();
     currentPage = 1;
     fetchProducts();
-  });
-
-  $(document).on('click', '.num-page', function() {
-    currentPage = $(this).data('page');
-    fetchProducts();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  $(document).on('click', '.prev-page', function() {
-    if (currentPage > 1) { currentPage--; fetchProducts(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  });
-
-  $(document).on('click', '.next-page', function() {
-    currentPage++; fetchProducts(); window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // Modal logic

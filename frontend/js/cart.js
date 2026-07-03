@@ -114,7 +114,6 @@ window.Cart = {
 let currentPage = 1;
 let currentSearch = '';
 let totalPages = 1;
-let infiniteScrollEnabled = true;
 let isLoading = false;
 
 window.loadProducts = function (page = 1, append = false) {
@@ -191,28 +190,11 @@ window.loadProducts = function (page = 1, append = false) {
 };
 
 function renderPagination(pagination) {
-  if (infiniteScrollEnabled) {
-    $('#pagination').html(
-      pagination.page < pagination.pages
-        ? `<div style="text-align:center;padding:20px;color:var(--text-muted)">Scroll for more...</div>`
-        : `<p style="color:var(--text-muted);text-align:center">You've seen it all!</p>`
-    );
-    return;
-  }
-  if (pagination.pages <= 1) { $('#pagination').html(''); return; }
-
-  const p = pagination;
-  let html = `<button class="pagination-btn" ${p.page <= 1 ? 'disabled' : ''} data-page="${p.page - 1}">&#8249;</button>`;
-  const delta = 2;
-  for (let i = 1; i <= p.pages; i++) {
-    if (i === 1 || i === p.pages || (i >= p.page - delta && i <= p.page + delta)) {
-      html += `<button class="pagination-btn ${i === p.page ? 'active' : ''}" data-page="${i}">${i}</button>`;
-    } else if (i === p.page - delta - 1 || i === p.page + delta + 1) {
-      html += `<span style="color:var(--text-muted);padding:0 4px">…</span>`;
-    }
-  }
-  html += `<button class="pagination-btn" ${p.page >= p.pages ? 'disabled' : ''} data-page="${p.page + 1}">&#8250;</button>`;
-  $('#pagination').html(html);
+  $('#pagination').html(
+    pagination.page < pagination.pages
+      ? `<div style="text-align:center;padding:20px;color:var(--text-muted)">Scroll for more...</div>`
+      : `<p style="color:var(--text-muted);text-align:center">You've seen it all!</p>`
+  );
 }
 
 // =============================================
@@ -422,19 +404,9 @@ $(document).ready(function () {
     window.Cart.open();
   });
 
-  // Pagination
-  $(document).on('click', '.pagination-btn', function () {
-    if ($(this).prop('disabled') || $(this).hasClass('active')) return;
-    currentPage = parseInt($(this).data('page'));
-    window.loadProducts(currentPage, false);
-    window.scrollTo({ top: document.querySelector('.catalog-section')?.offsetTop - 80 || 0, behavior: 'smooth' });
-  });
-
   // Infinite Scroll Listener (Throttled)
   let scrollTimeout;
   $(window).on('scroll', function () {
-    if (!infiniteScrollEnabled) return;
-    
     if (scrollTimeout) clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(function() {
       if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
@@ -443,13 +415,6 @@ $(document).ready(function () {
         }
       }
     }, 150);
-  });
-
-  // Infinite scroll toggle
-  $(document).on('click', '.scroll-toggle', function () {
-    infiniteScrollEnabled = !infiniteScrollEnabled;
-    $('.toggle-switch').toggleClass('on', infiniteScrollEnabled);
-    window.loadProducts(1, false);
   });
 
   // Navbar search + autocomplete
