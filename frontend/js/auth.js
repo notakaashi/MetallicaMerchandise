@@ -96,10 +96,9 @@ window.renderNavbar = function (opts = {}) {
       <a href="/register.html" class="btn btn-primary btn-sm">Join Now</a>`;
   }
 
-  const isLogged = user && window.Auth.isLoggedIn();
   const isAdminPage = window.location.pathname.startsWith('/admin');
 
-  const cartHtml = (showCart && isLogged) ? `
+  const cartHtml = showCart ? `
     <button class="cart-btn" id="cart-open-btn" aria-label="Open cart">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
