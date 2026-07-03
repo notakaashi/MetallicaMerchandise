@@ -128,7 +128,7 @@ $(document).ready(function () {
         : `<span class="stock-badge out-stock">Out of Stock</span>`;
     $('#detail-stock-badge').html(badge);
     
-    $('#detail-add-btn').data('id', p.id).prop('disabled', p.stock <= 0);
+    $('#detail-add-btn').data('id', p.id).data('product', p).prop('disabled', p.stock <= 0);
 
     let galleryHtml = '';
     if (p.images && p.images.length) {
@@ -144,19 +144,19 @@ $(document).ready(function () {
   });
 
   $(document).on('click', '#detail-add-btn', function() {
-    let id = $(this).data('id');
+    let p = $(this).data('product');
     let qty = parseInt($('#detail-qty').val());
-    if (window.Cart) {
-      window.Cart.addItem(id, qty);
+    if (window.Cart && p) {
+      window.Cart.add({ id: p.id, name: p.name, price: p.price, images: p.images || [] }, qty);
       $('#product-detail-modal').removeClass('open');
     }
   });
 
   $(document).on('click', '.add-to-cart-quick', function(e) {
     e.stopPropagation();
-    let id = $(this).data('id');
-    if (window.Cart) {
-      window.Cart.addItem(id, 1);
+    let p = $(this).closest('.product-card').data('product');
+    if (window.Cart && p) {
+      window.Cart.add({ id: p.id, name: p.name, price: p.price, images: p.images || [] }, 1);
     }
   });
 
