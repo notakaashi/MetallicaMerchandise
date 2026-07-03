@@ -8,6 +8,7 @@ router.post('/', auth, ctrl.createTransaction);
 router.get('/my', auth, ctrl.getMyTransactions);
 router.get('/:id', auth, ctrl.getTransactionById);
 router.get('/', admin, ctrl.getAllTransactions);
+router.get('/:id/receipt', ctrl.downloadReceipt);
 router.patch('/:id/status', admin, ctrl.updateTransactionStatus);
 
 module.exports = router;

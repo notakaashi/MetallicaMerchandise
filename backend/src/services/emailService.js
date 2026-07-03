@@ -6,15 +6,20 @@ let transporter = null;
 async function getTransporter() {
   if (transporter) return transporter;
 
-  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+  const user = process.env.MAIL_USERNAME || process.env.SMTP_USER;
+  const pass = process.env.MAIL_PASSWORD || process.env.SMTP_PASS;
+  const host = process.env.MAIL_HOST || process.env.SMTP_HOST || 'sandbox.smtp.mailtrap.io';
+  const port = parseInt(process.env.MAIL_PORT || process.env.SMTP_PORT) || 2525;
+
+  if (user && pass) {
     // Use configured SMTP
     transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT) || 587,
+      host: host,
+      port: port,
       secure: false,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: user,
+        pass: pass,
       },
     });
   } else {
@@ -84,8 +89,17 @@ async function sendReceiptEmail(user, transaction, pdfBuffer) {
           </tbody>
         </table>
 
+        <div style="text-align:center;margin-top:30px;">
+          ${(() => {
+            const crypto = require('crypto');
+            const secret = process.env.SESSION_SECRET || 'metallica_secret_key_change_in_production';
+            const hash = crypto.createHmac('sha256', secret).update(transaction.id.toString()).digest('hex');
+            return `<a href="http://localhost:3001/api/transactions/${transaction.id}/receipt?token=${hash}" style="display:inline-block;background:#DE0A26;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:4px;font-weight:bold;font-size:14px;">Download PDF Receipt</a>`;
+          })()}
+        </div>
+
         <p style="color:#8a8a8a;font-size:12px;margin-top:30px;text-align:center;">
-          Your receipt PDF is attached to this email.<br>
+          Your receipt PDF is also attached to this email.<br>
           Thank you for shopping with Metallica Merch Store! 🤘
         </p>
         <p style="color:#444;font-size:11px;text-align:center;">© 2024 Metallica Merch Store</p>

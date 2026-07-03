@@ -7,137 +7,164 @@ const PDFDocument = require('pdfkit');
  */
 function generateReceipt(transaction) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 50, size: 'A4' });
+    const doc = new PDFDocument({ margin: 30, size: 'A4' });
     const buffers = [];
-
     doc.on('data', chunk => buffers.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(buffers)));
     doc.on('error', reject);
 
-    const primaryRed = '#DE0A26';
-    const darkBg = '#1a1a1a';
-    const silver = '#8a8a8a';
+    const width = doc.page.width;
+    const height = doc.page.height;
+    
+    // Outer border
+    doc.lineWidth(1).strokeColor('black').rect(30, 30, width - 60, height - 60).stroke();
+    // Top blue thick border
+    doc.lineWidth(8).strokeColor('#002b7f').moveTo(30, 34).lineTo(width - 30, 34).stroke();
 
-    // Header background bar
-    doc.rect(0, 0, doc.page.width, 120).fill(darkBg);
+    // Gothic/Metallic "M" Logo
+    // A sharp, jagged "M" drawn with paths
+    doc.fillColor('#333333');
+    doc.moveTo(40, 85).lineTo(45, 45).lineTo(55, 45).lineTo(60, 65).lineTo(65, 45).lineTo(75, 45).lineTo(80, 85).lineTo(70, 85).lineTo(68, 62).lineTo(62, 78).lineTo(58, 78).lineTo(52, 62).lineTo(50, 85).fill();
+    doc.lineWidth(1).strokeColor('#DE0A26').moveTo(40, 85).lineTo(45, 45).lineTo(55, 45).lineTo(60, 65).lineTo(65, 45).lineTo(75, 45).lineTo(80, 85).lineTo(70, 85).lineTo(68, 62).lineTo(62, 78).lineTo(58, 78).lineTo(52, 62).lineTo(50, 85).lineTo(40, 85).stroke();
 
-    // Branding
-    doc.fill(primaryRed)
-      .font('Helvetica-Bold')
-      .fontSize(28)
-      .text('🎸 METALLICA', 50, 35, { continued: false });
+    // Company Details
+    doc.fillColor('black').font('Helvetica').fontSize(14).text('METALLICA', 90, 55);
+    doc.fontSize(8).text('Operated by', 90, 72);
+    doc.font('Helvetica-Bold').fontSize(10).text('METALLICA MERCH STORE', 90, 82);
+    doc.font('Helvetica').fontSize(9).text('NON-VAT REG TIN 123-456-789-00000', 90, 94);
+    doc.fontSize(7).text('4TH FLOOR, BIR BLDG. QUEZON AVENUE,', 90, 108);
+    doc.text('PINYAHAN, QUEZON CITY 1000', 90, 118);
 
-    doc.fill(silver)
-      .font('Helvetica')
-      .fontSize(12)
-      .text('MERCH STORE — ORDER RECEIPT', 50, 68);
+    // INVOICE Text
+    doc.fillColor('#002b7f').font('Helvetica-Bold').fontSize(24).text('INVOICE', 0, 60, { align: 'right', width: width - 40 });
 
-    doc.moveDown(4);
+    // Invoice No
+    const invoiceNo = String(transaction.id).padStart(7, '0');
+    doc.fillColor('red').font('Helvetica-Bold').fontSize(12).text(`Invoice No. ${invoiceNo}`, 0, 130, { align: 'right', width: width - 40 });
 
-    // Order info box
-    doc.fill('#333333')
-      .roundedRect(50, 135, doc.page.width - 100, 80, 8)
-      .fill();
+    // Checkboxes and Date Box
+    doc.lineWidth(0.5).strokeColor('black').rect(50, 140, 8, 8).stroke();
+    doc.fillColor('black').font('Helvetica').fontSize(9).text('CASH SALES', 65, 140);
+    
+    doc.lineWidth(0.5).strokeColor('black').rect(50, 152, 8, 8).stroke();
+    doc.text('CHARGE SALES', 65, 152);
 
-    doc.fill('#ffffff')
-      .font('Helvetica-Bold')
-      .fontSize(13)
-      .text(`Order #${transaction.id}`, 70, 150);
+    // Date box
+    const dateBoxX = width - 200;
+    doc.lineWidth(1).strokeColor('black').rect(dateBoxX, 140, 160, 20).stroke();
+    doc.text('Date:', dateBoxX + 5, 146);
+    doc.text(new Date(transaction.createdAt).toLocaleDateString(), dateBoxX + 40, 146);
 
-    doc.fill(silver)
-      .font('Helvetica')
-      .fontSize(11)
-      .text(`Date: ${new Date(transaction.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 70, 170)
-      .text(`Status: ${transaction.status.toUpperCase()}`, 70, 186);
+    // SOLD TO Box
+    const soldToY = 170;
+    doc.rect(30, soldToY, width - 60, 80).stroke();
+    doc.font('Helvetica-Bold').fontSize(9).text('SOLD TO:', 35, soldToY + 5);
+    doc.font('Helvetica').fontSize(9);
+    doc.text('Registered Name  :', 45, soldToY + 20);
+    doc.text('TIN                          :', 45, soldToY + 35);
+    doc.text('Business Address :', 45, soldToY + 50);
 
-    // Customer info
-    doc.fill(primaryRed)
-      .font('Helvetica-Bold')
-      .fontSize(13)
-      .text('CUSTOMER', 50, 240);
+    const buyerName = transaction.full_name || (transaction.user ? transaction.user.name : '');
+    const buyerAddress = `${transaction.address || ''}, ${transaction.city || ''} ${transaction.zip || ''}`;
+    
+    doc.text(buyerName, 150, soldToY + 20);
+    doc.text('', 150, soldToY + 35); // TIN empty for regular customers
+    doc.text(buyerAddress, 150, soldToY + 50);
 
-    doc.moveTo(50, 258).lineTo(doc.page.width - 50, 258).stroke(silver);
+    // Table Header
+    const tableY = 260;
+    doc.rect(30, tableY, width - 60, 30).fillAndStroke('#e0e0e0', 'black');
+    doc.fillColor('black').font('Helvetica').fontSize(9);
+    
+    // Column x-coords
+    const col1 = 30; // Item desc
+    const col2 = 330; // Qty
+    const col3 = 400; // Unit Price
+    const col4 = 480; // Amount
 
-    doc.fill('#222222')
-      .font('Helvetica')
-      .fontSize(11)
-      .text(`Name:  ${transaction.user ? transaction.user.name : 'N/A'}`, 50, 268)
-      .text(`Email: ${transaction.user ? transaction.user.email : 'N/A'}`, 50, 284);
+    doc.text('Item Description/', col1 + 5, tableY + 5, { width: col2 - col1 - 10, align: 'center' });
+    doc.text('Nature of Service', col1 + 5, tableY + 15, { width: col2 - col1 - 10, align: 'center' });
+    doc.text('Quantity', col2, tableY + 10, { width: col3 - col2, align: 'center' });
+    doc.text('Unit Price', col3, tableY + 10, { width: col4 - col3, align: 'center' });
+    doc.text('Amount', col4, tableY + 10, { width: width - 30 - col4, align: 'center' });
 
-    // Items table header
-    doc.fill(primaryRed)
-      .font('Helvetica-Bold')
-      .fontSize(13)
-      .text('ORDER ITEMS', 50, 320);
+    // Table Grid Lines
+    doc.lineWidth(1).strokeColor('black');
+    const bottomTableY = 600;
+    doc.rect(30, tableY + 30, width - 60, bottomTableY - (tableY + 30)).stroke();
+    doc.moveTo(col2, tableY).lineTo(col2, bottomTableY).stroke();
+    doc.moveTo(col3, tableY).lineTo(col3, bottomTableY).stroke();
+    doc.moveTo(col4, tableY).lineTo(col4, bottomTableY).stroke();
 
-    doc.moveTo(50, 338).lineTo(doc.page.width - 50, 338).stroke(silver);
-
-    // Table headers
-    doc.fill(darkBg)
-      .rect(50, 342, doc.page.width - 100, 24)
-      .fill();
-
-    doc.fill('#ffffff')
-      .font('Helvetica-Bold')
-      .fontSize(10)
-      .text('ITEM', 60, 349)
-      .text('QTY', 360, 349, { width: 60, align: 'center' })
-      .text('UNIT PRICE', 430, 349, { width: 80, align: 'right' })
-      .text('SUBTOTAL', 520, 349, { width: 80, align: 'right' });
-
-    // Table rows
-    let y = 374;
+    // Table Rows
+    let rowY = tableY + 40;
     for (const item of transaction.items || []) {
       const productName = item.product ? item.product.name : `Product #${item.product_id}`;
       const unitPrice = parseFloat(item.price);
       const subtotal = unitPrice * item.quantity;
 
-      if (y % 2 === 0) {
-        doc.fill('#f9f9f9').rect(50, y - 4, doc.page.width - 100, 22).fill();
-      }
-
-      doc.fill('#222222')
-        .font('Helvetica')
-        .fontSize(10)
-        .text(productName, 60, y, { width: 290 })
-        .text(String(item.quantity), 360, y, { width: 60, align: 'center' })
-        .text(`$${unitPrice.toFixed(2)}`, 430, y, { width: 80, align: 'right' })
-        .text(`$${subtotal.toFixed(2)}`, 520, y, { width: 80, align: 'right' });
-
-      y += 26;
+      doc.text(productName, col1 + 10, rowY, { width: col2 - col1 - 20 });
+      doc.text(String(item.quantity), col2, rowY, { width: col3 - col2, align: 'center' });
+      doc.text(unitPrice.toFixed(2), col3, rowY, { width: col4 - col3, align: 'center' });
+      doc.text(subtotal.toFixed(2), col4, rowY, { width: width - 30 - col4, align: 'center' });
+      
+      // Horizontal line per row
+      doc.moveTo(30, rowY + 20).lineTo(width - 30, rowY + 20).stroke();
+      rowY += 25;
     }
 
-    // Total line
-    doc.moveTo(50, y + 6).lineTo(doc.page.width - 50, y + 6).stroke(silver);
+    // Totals Box
+    const totalBoxY = bottomTableY + 10;
+    const totalBoxX = width - 250;
+    doc.rect(totalBoxX, totalBoxY, 220, 80).stroke();
+    // Inner lines
+    doc.moveTo(totalBoxX, totalBoxY + 20).lineTo(width - 30, totalBoxY + 20).stroke();
+    doc.moveTo(totalBoxX, totalBoxY + 40).lineTo(width - 30, totalBoxY + 40).stroke();
+    doc.moveTo(totalBoxX, totalBoxY + 60).lineTo(width - 30, totalBoxY + 60).stroke();
+    doc.moveTo(totalBoxX + 120, totalBoxY).lineTo(totalBoxX + 120, totalBoxY + 80).stroke(); // vertical
 
-    doc.fill(primaryRed)
-      .font('Helvetica-Bold')
-      .fontSize(14)
-      .text('TOTAL:', 380, y + 16)
-      .text(`$${parseFloat(transaction.total_price).toFixed(2)}`, 460, y + 16, { width: 140, align: 'right' });
+    doc.font('Helvetica-Bold').fontSize(9);
+    doc.text('Total Sales', totalBoxX + 5, totalBoxY + 6);
+    doc.font('Helvetica').fontSize(8);
+    doc.text('Less: Discount', totalBoxX + 5, totalBoxY + 22);
+    doc.text('[SC/PWD/NAAC/MOV/SP]', totalBoxX + 5, totalBoxY + 30);
+    doc.text('Less: Withholding Tax', totalBoxX + 5, totalBoxY + 46);
+    doc.font('Helvetica-Bold').fontSize(10);
+    doc.text('TOTAL AMOUNT DUE', totalBoxX + 5, totalBoxY + 66);
+
+    const totalStr = parseFloat(transaction.total_price).toFixed(2);
+    doc.font('Helvetica').fontSize(9);
+    doc.text(totalStr, totalBoxX + 125, totalBoxY + 6);
+    doc.text('0.00', totalBoxX + 125, totalBoxY + 26);
+    doc.text('0.00', totalBoxX + 125, totalBoxY + 46);
+    doc.font('Helvetica-Bold').fontSize(10);
+    doc.text(totalStr, totalBoxX + 125, totalBoxY + 66);
+
+    // Warning Text
+    doc.fillColor('red').font('Helvetica-Bold').fontSize(10);
+    doc.text('"THIS DOCUMENT IS NOT VALID\nFOR CLAIM OF INPUT TAX."', 40, bottomTableY + 40, { align: 'center', width: 200 });
+
+    // Signature box
+    const sigBoxY = bottomTableY + 100;
+    const sigBoxX = width - 250;
+    doc.fillColor('black').font('Helvetica').fontSize(8);
+    doc.text('SC/PWD/NAAC/MOV/', sigBoxX - 90, sigBoxY);
+    doc.text('Solo Parent ID No.:', sigBoxX - 90, sigBoxY + 10);
+    doc.rect(sigBoxX, sigBoxY - 5, 220, 20).stroke();
+    
+    doc.text('SC/PWD/NAAC/MOV/', sigBoxX - 90, sigBoxY + 25);
+    doc.text('Signature:', sigBoxX - 90, sigBoxY + 35);
+    doc.rect(sigBoxX, sigBoxY + 20, 220, 20).stroke();
 
     // Footer
-    const footerY = doc.page.height - 80;
-    doc.moveTo(50, footerY - 10).lineTo(doc.page.width - 50, footerY - 10).stroke(silver);
+    const footY = height - 65;
+    doc.fontSize(6);
+    doc.text('PERMIT TO USE LOOSE LEAF NO.: LLSI0440224-00059', 35, footY);
+    doc.text('DATE ISSUED: 06-FEB-2024', 35, footY + 10);
 
-    doc.fill(silver)
-      .font('Helvetica')
-      .fontSize(9)
-      .text('Thank you for your order! If you have any questions, contact us at support@metallica.store', 50, footerY, {
-        align: 'center',
-        width: doc.page.width - 100,
-      });
-
-    doc.fill(darkBg)
-      .rect(0, footerY + 20, doc.page.width, 60)
-      .fill();
-
-    doc.fill('#555555')
-      .fontSize(8)
-      .text('© 2024 Metallica Merch Store — All rights reserved. For The Love of Metal.', 50, footerY + 32, {
-        align: 'center',
-        width: doc.page.width - 100,
-      });
+    doc.text('BIR AUTHORITY TO PRINT NO.: 3AU000000005762', 250, footY);
+    doc.text('DATE ISSUED: 23-FEB-2024', 250, footY + 10);
+    doc.text('APPROVED SERIES: 5000001 - 5000500 10BKLTS (3X)', 250, footY + 20);
 
     doc.end();
   });

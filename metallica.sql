@@ -113,7 +113,7 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_path`, `createdAt`, `up
 CREATE TABLE `transactions` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` bigint UNSIGNED NOT NULL,
-  `status` enum('pending','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','completed','cancelled','shipped','delivering') NOT NULL DEFAULT 'pending',
   `full_name` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,

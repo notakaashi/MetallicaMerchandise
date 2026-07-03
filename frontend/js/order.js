@@ -21,6 +21,8 @@ $(document).ready(function () {
       let statusBadge = 'badge-silver';
       if (tx.status === 'completed') statusBadge = 'badge-success';
       if (tx.status === 'pending') statusBadge = 'badge-warning';
+      if (tx.status === 'shipped') statusBadge = 'badge-info';
+      if (tx.status === 'delivering') statusBadge = 'badge-primary';
       if (tx.status === 'cancelled') statusBadge = 'badge-danger';
 
       if (tx.items && tx.items.length) {

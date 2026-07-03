@@ -59,6 +59,29 @@ window.Auth = {
 };
 
 // =============================================
+// GLOBAL AJAX 401 HANDLER
+// =============================================
+$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
+  if (jqXHR.status === 401) {
+    // Only act if the user was supposedly logged in
+    if (window.Auth.isLoggedIn()) {
+      window.Auth.clearSession();
+      
+      const path = window.location.pathname;
+      const requiresAuth = path.includes('checkout') || path.includes('orders') || path.includes('dashboard');
+      
+      if (requiresAuth) {
+        window.showToast('Session expired. Please log in again.', 'error');
+        setTimeout(() => window.location.href = '/login.html', 1500);
+      } else {
+        // For public pages like product.html, just reload to reflect logged-out state
+        window.location.reload();
+      }
+    }
+  }
+});
+
+// =============================================
 // NAVBAR RENDERER (injected via JS into pages)
 // =============================================
 window.renderNavbar = function (opts = {}) {

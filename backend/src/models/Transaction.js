@@ -14,7 +14,7 @@ const Transaction = sequelize.define('Transaction', {
       references: { model: 'users', key: 'id' },
     },
     status: {
-      type: DataTypes.ENUM('pending', 'completed', 'cancelled'),
+      type: DataTypes.ENUM('pending', 'completed', 'cancelled', 'shipped', 'delivering'),
       defaultValue: 'pending',
     },
     full_name: {

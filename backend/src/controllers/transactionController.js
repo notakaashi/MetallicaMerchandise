@@ -125,7 +125,7 @@ exports.getAllTransactions = async (req, res) => {
 exports.updateTransactionStatus = async (req, res) => {
   try {
     let newStatus = req.body.status;
-    let validStatuses = ['pending', 'completed', 'cancelled'];
+    let validStatuses = ['pending', 'completed', 'cancelled', 'shipped', 'delivering'];
 
     if (validStatuses.includes(newStatus) === false) {
       return res.status(400).json({ error: 'Invalid status' });
@@ -200,5 +200,38 @@ exports.getTransactionById = async (req, res) => {
   } catch (err) {
     console.error('Get transaction error:', err);
     res.status(500).json({ error: 'Failed to fetch order' });
+  }
+};
+
+exports.downloadReceipt = async (req, res) => {
+  try {
+    let token = req.query.token;
+    if (!token) return res.status(401).send('Unauthorized');
+    
+    const crypto = require('crypto');
+    const secret = process.env.SESSION_SECRET || 'metallica_secret_key_change_in_production';
+    const expectedHash = crypto.createHmac('sha256', secret).update(req.params.id.toString()).digest('hex');
+    
+    if (token !== expectedHash) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    let transaction = await Transaction.findByPk(req.params.id, {
+      include: [
+        { model: User, as: 'user' },
+        { model: TransactionItem, as: 'items', include: [{ model: Product, as: 'product' }] },
+      ],
+    });
+
+    if (!transaction) return res.status(404).send('Order not found');
+
+    let pdfBuffer = await generateReceipt(transaction);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="metallica-receipt-${transaction.id}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error('Download receipt error:', err);
+    res.status(500).send('Failed to generate receipt');
   }
 };

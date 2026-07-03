@@ -301,7 +301,7 @@ window.loadMyOrders = function () {
 
       let html = '';
       for (const tx of txs) {
-        const statusBadge = { pending: 'badge-warning', completed: 'badge-success', cancelled: 'badge-danger' }[tx.status] || 'badge-silver';
+        const statusBadge = { pending: 'badge-warning', shipped: 'badge-info', delivering: 'badge-primary', completed: 'badge-success', cancelled: 'badge-danger' }[tx.status] || 'badge-silver';
         let itemsHtml = '';
         for (const item of tx.items || []) {
           const img = item.product && item.product.images && item.product.images.length

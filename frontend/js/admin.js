@@ -104,7 +104,7 @@ function renderLineChart(dailyData) {
 function renderPieChart(statusData) {
   const ctx = document.getElementById('pie-chart');
   if (!ctx) return;
-  const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
+  const colors = { pending: '#ff9f43', shipped: '#00cfe8', delivering: '#7367f0', completed: '#28c76f', cancelled: '#ea5455' };
   new Chart(ctx, {
     type: 'pie',
     data: {
@@ -369,13 +369,16 @@ function initTransactionsTable() {
           {
             data: 'status', title: 'Status',
             render: (d, _, row) => {
-              const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
-              return `<select class="form-control status-select" data-id="${row.id}" style="padding:5px 10px;font-size:13px;border-color:${colors[d]}">
-                <option value="pending"   ${d === 'pending' ? 'selected' : ''}>Pending</option>
-                <option value="completed" ${d === 'completed' ? 'selected' : ''}>Completed</option>
-                <option value="cancelled" ${d === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-              </select>`;
-            },
+              const colors = { pending: '#ff9f43', shipped: '#00cfe8', delivering: '#7367f0', completed: '#28c76f', cancelled: '#ea5455' };
+              return `
+                <select class="status-select" data-id="${row.id}" style="border:2px solid ${colors[d]};border-radius:4px;padding:4px 8px;background:#1a1a1a;color:#fff;outline:none;">
+                  <option value="pending"   ${d === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="shipped"   ${d === 'shipped' ? 'selected' : ''}>Shipped</option>
+                  <option value="delivering" ${d === 'delivering' ? 'selected' : ''}>Delivering</option>
+                  <option value="completed" ${d === 'completed' ? 'selected' : ''}>Completed</option>
+                  <option value="cancelled" ${d === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                </select>
+              `;},
           },
           { data: 'createdAt', title: 'Date', render: (d) => new Date(d).toLocaleDateString() },
         ],
@@ -388,6 +391,8 @@ function initTransactionsTable() {
       // Update status counters
       const rows = data.transactions;
       $('#count-pending').text(rows.filter(r => r.status === 'pending').length);
+      $('#count-shipped').text(rows.filter(r => r.status === 'shipped').length);
+      $('#count-delivering').text(rows.filter(r => r.status === 'delivering').length);
       $('#count-completed').text(rows.filter(r => r.status === 'completed').length);
       $('#count-cancelled').text(rows.filter(r => r.status === 'cancelled').length);
     },
@@ -400,7 +405,7 @@ function initTransactionsTable() {
       url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
       success: () => {
         window.showToast(`Order #${id} marked as ${status}`, 'success');
-        const colors = { pending: '#ff9f43', completed: '#28c76f', cancelled: '#ea5455' };
+        const colors = { pending: '#ff9f43', shipped: '#00cfe8', delivering: '#7367f0', completed: '#28c76f', cancelled: '#ea5455' };
         $select.css('border-color', colors[status] || '');
       },
       error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to update status', 'error'),
