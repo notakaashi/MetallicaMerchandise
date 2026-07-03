@@ -370,6 +370,15 @@ $(document).ready(function () {
     window.Cart.remove(parseInt($(this).data('id')));
   });
 
+  // Clear cart
+  $(document).on('click', '#cart-clear-btn', function () {
+    if (window.Cart.get().length === 0) return;
+    if (confirm('Remove all items from your cart?')) {
+      window.Cart.clear();
+      window.showToast('Cart cleared', 'info');
+    }
+  });
+
   // Add to cart (product grid)
   $(document).on('click', '.add-to-cart-btn', function (e) {
     e.stopPropagation();

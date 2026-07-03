@@ -14,7 +14,7 @@ window.showToast = function (message, type = 'info', title = '') {
     document.body.appendChild(container);
   }
 
-  const icons  = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
+  const icons  = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
   const titles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
 
   const toast = document.createElement('div');
@@ -30,7 +30,7 @@ window.showToast = function (message, type = 'info', title = '') {
 
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(20px)';
+    toast.style.transform = 'translateX(-20px)';
     toast.style.transition = 'all 0.3s ease';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
@@ -154,6 +154,7 @@ window.renderNavbar = function (opts = {}) {
           <span class="cart-total-value" id="cart-total-value">$0.00</span>
         </div>
         <a href="/checkout.html" class="btn btn-primary w-full btn-lg">Checkout</a>
+        <button id="cart-clear-btn" class="btn btn-ghost w-full btn-sm" style="margin-top:8px">Clear Cart</button>
       </div>
     </aside>
     <div class="toast-container" id="toast-container"></div>`;
