@@ -5,7 +5,7 @@ const { generateReceipt } = require('../services/pdfService');
 exports.createTransaction = async (req, res) => {
   try {
     let items = req.body.items;
-    
+
     if (!items || Array.isArray(items) === false || items.length === 0) {
       return res.status(400).json({ error: 'Cart items are required' });
     }
@@ -16,28 +16,27 @@ exports.createTransaction = async (req, res) => {
     for (let i = 0; i < items.length; i++) {
       let currentItem = items[i];
       let product = await Product.findByPk(currentItem.product_id);
-      
+
       if (product === null) {
         return res.status(404).json({ error: 'Product #' + currentItem.product_id + ' not found' });
       }
-      
+
       if (product.stock < currentItem.quantity) {
         return res.status(400).json({ error: 'Insufficient stock for "' + product.name + '"' });
       }
-      
+
       let itemCost = parseFloat(product.price) * currentItem.quantity;
       totalPrice = totalPrice + itemCost;
-      
-      itemDetails.push({ 
-        product: product, 
-        quantity: currentItem.quantity 
+
+      itemDetails.push({
+        product: product,
+        quantity: currentItem.quantity
       });
     }
 
     let newTransaction = await Transaction.create({
       user_id: req.user.id,
       total_price: totalPrice.toFixed(2),
-      status: 'completed', // auto-complete for demo
       full_name: req.body.full_name,
       address: req.body.address,
       city: req.body.city,
@@ -46,14 +45,14 @@ exports.createTransaction = async (req, res) => {
 
     for (let i = 0; i < itemDetails.length; i++) {
       let detail = itemDetails[i];
-      
+
       await TransactionItem.create({
         transaction_id: newTransaction.id,
         product_id: detail.product.id,
         quantity: detail.quantity,
         price: detail.product.price,
       });
-      
+
       let newStock = detail.product.stock - detail.quantity;
       await detail.product.update({ stock: newStock });
     }
@@ -94,7 +93,7 @@ exports.getMyTransactions = async (req, res) => {
       }],
       order: [['createdAt', 'DESC']],
     });
-    
+
     res.json({ transactions: myTransactions });
   } catch (err) {
     console.error('My transactions error:', err);
@@ -115,7 +114,7 @@ exports.getAllTransactions = async (req, res) => {
       ],
       order: [['createdAt', 'DESC']],
     });
-    
+
     res.json({ transactions: allTransactions });
   } catch (err) {
     console.error('Admin transactions error:', err);
@@ -127,7 +126,7 @@ exports.updateTransactionStatus = async (req, res) => {
   try {
     let newStatus = req.body.status;
     let validStatuses = ['pending', 'completed', 'cancelled'];
-    
+
     if (validStatuses.includes(newStatus) === false) {
       return res.status(400).json({ error: 'Invalid status' });
     }
@@ -142,7 +141,7 @@ exports.updateTransactionStatus = async (req, res) => {
         },
       ],
     });
-    
+
     if (transaction === null) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
