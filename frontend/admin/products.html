@@ -20,9 +20,9 @@
     <div class="page-header">
       <div>
         <h1 class="page-header-title">Products</h1>
-        <p class="page-header-subtitle">Manage your Metallica merch catalog</p>
+        <p class="text-muted mt-1">Manage your Metallica merch catalog</p>
       </div>
-      <button class="btn btn-primary" id="add-product-btn">
+      <button class="btn btn-accent" id="add-product-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
@@ -103,9 +103,9 @@
           </div>
         </div>
 
-        <div class="modal-footer" style="padding:0;border:none;margin-top:24px">
+        <div class="modal-footer" style="padding:0;border:none;margin-top:24px;display:flex;justify-content:flex-end;gap:var(--space-md)">
           <button type="button" class="btn btn-secondary" onclick="$('#product-form-modal').removeClass('open')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Product</button>
+          <button type="submit" class="btn btn-accent">Save Product</button>
         </div>
       </form>
     </div>

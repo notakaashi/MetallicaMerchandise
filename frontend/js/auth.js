@@ -89,73 +89,52 @@ window.renderNavbar = function (opts = {}) {
   const user = window.Auth.getUser();
 
   const searchHtml = showSearch ? `
-    <div class="navbar-search" style="margin-left: 24px">
+    <div class="navbar-search">
       <svg class="navbar-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" id="navbar-search" placeholder="Search Metallica merch..." autocomplete="off" aria-label="Search products">
+      <input type="text" id="navbar-search" placeholder="Search merch..." autocomplete="off" aria-label="Search products">
     </div>` : '';
 
   let userHtml;
   if (user && window.Auth.isLoggedIn()) {
     userHtml = `
-      <div style="position:relative" id="user-dropdown-container">
-        <button id="user-dropdown-btn" style="background:transparent;border:none;color:var(--text-primary);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px">
-          ${user.name}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      <div class="nav-dropdown" id="user-dropdown-container">
+        <button id="user-dropdown-btn" class="nav-dropdown-btn">
+          <span style="font-weight: 600; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); font-family: var(--font-display);">${user.name}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted)"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div id="user-dropdown-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);min-width:140px;box-shadow:0 10px 25px rgba(0,0,0,0.5);z-index:100">
-          ${user.role === 'admin' 
-            ? `<a href="/admin/dashboard.html" style="display:block;padding:10px 16px;color:#e0e0e0;text-decoration:none;font-size:14px;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">Admin Panel</a>` 
-            : ``}
-          <a href="/orders.html" style="display:block;padding:10px 16px;color:#e0e0e0;text-decoration:none;font-size:14px;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">My Orders</a>
-          <div style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
-          <button id="logout-btn" style="display:block;width:100%;text-align:left;background:transparent;border:none;padding:10px 16px;color:#e0e0e0;font-family:'Inter',sans-serif;font-size:14px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='var(--accent-red)'" onmouseout="this.style.background='transparent'">Logout</button>
+        <div id="user-dropdown-menu" class="nav-dropdown-content">
+          ${user.role === 'admin' ? `<a href="/admin/dashboard.html">Admin Panel</a>` : ``}
+          <a href="/orders.html">My Orders</a>
+          <div class="dropdown-divider"></div>
+          <button id="logout-btn">Logout</button>
         </div>
       </div>`;
   } else {
     userHtml = `
       <a href="/login.html" class="btn btn-ghost btn-sm">Login</a>
-      <a href="/register.html" class="btn btn-primary btn-sm">Join Now</a>`;
+      <a href="/register.html" class="btn btn-primary btn-sm">Join</a>`;
   }
 
   const isAdminPage = window.location.pathname.startsWith('/admin');
 
   const cartHtml = showCart ? `
     <button class="cart-btn" id="cart-open-btn" aria-label="Open cart">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
       </svg>
       Cart
       <span class="cart-badge" style="display:none">0</span>
     </button>` : '';
 
   const productsLinkHtml = !isAdminPage ? `
-    <style>
-      .nav-dropdown { position: relative; display: flex; align-items: center; margin-left: 32px; height: 100%; padding: 10px 0; cursor: pointer; }
-      .nav-dropdown-content { 
-        display: none; position: absolute; top: 100%; left: -16px; min-width: 180px; 
-        background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; border-radius: 4px; overflow: hidden; margin-top: -5px;
-      }
-      .nav-dropdown:hover .nav-dropdown-content { display: block; }
-      .nav-dropdown-content a {
-        color: #e0e0e0; padding: 12px 16px; text-decoration: none; display: block; 
-        font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
-        transition: background 0.2s, color 0.2s;
-      }
-      .nav-dropdown-content a:hover { background: var(--accent-red); color: #fff; }
-      .nav-dropdown-btn {
-        color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 14px; 
-        transition: color 0.2s; display: flex; align-items: center; gap: 4px;
-      }
-      .nav-dropdown:hover .nav-dropdown-btn { color: var(--accent-red); }
-    </style>
     <div class="nav-dropdown">
-      <a href="/products.html" class="nav-dropdown-btn">
-        PRODUCTS
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      <a href="/products.html" class="nav-dropdown-btn nav-link">
+        Products
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </a>
       <div class="nav-dropdown-content">
         <a href="/products.html?category=shirts">T-Shirts</a>
@@ -163,12 +142,12 @@ window.renderNavbar = function (opts = {}) {
         <a href="/products.html?category=posters">Posters</a>
         <a href="/products.html?category=vinyl">Vinyls</a>
         <a href="/products.html?category=accessories">Accessories</a>
-        <div style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
+        <div class="dropdown-divider"></div>
         <a href="/products.html">All Products</a>
       </div>
     </div>
-    <a href="/about.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">ABOUT US</a>
-    <a href="/contact.html" style="margin-left:24px;color:var(--text-primary);text-decoration:none;font-weight:600;font-size:14px;transition:color 0.2s" onmouseover="this.style.color='var(--accent-red)'" onmouseout="this.style.color='var(--text-primary)'">CONTACT</a>
+    <a href="/about.html" class="nav-link">About Us</a>
+    <a href="/contact.html" class="nav-link">Contact</a>
   ` : '';
 
   const navHtml = `
@@ -178,10 +157,12 @@ window.renderNavbar = function (opts = {}) {
           <span class="navbar-logo">METALLICA</span>
           <span class="navbar-tagline">Merch Store</span>
         </a>
-        ${productsLinkHtml}
-        ${searchHtml}
+        <div class="navbar-center">
+          ${productsLinkHtml}
+        </div>
         <div class="navbar-actions">
-          <div id="navbar-user-area" style="display:flex;align-items:center;gap:8px">
+          ${searchHtml}
+          <div id="navbar-user-area" style="display:flex;align-items:center;gap:16px; margin-left: 16px; border-left: 1px solid var(--border-color); padding-left: 16px;">
             ${userHtml}
           </div>
           ${cartHtml}
@@ -192,33 +173,49 @@ window.renderNavbar = function (opts = {}) {
     <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
       <div class="cart-drawer-header">
         <div class="cart-drawer-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
           </svg>
           Your Cart
         </div>
-        <button class="modal-close" id="cart-close-btn" aria-label="Close cart">×</button>
+        <button class="modal-close" id="cart-close-btn" aria-label="Close cart">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
       <div class="cart-drawer-body" id="cart-drawer-body">
         <div class="cart-empty">
           <span class="cart-empty-icon"></span>
           <p>Your cart is empty</p>
-          <p style="font-size:13px;color:var(--text-muted)">Add some merch to get started!</p>
+          <p class="text-muted mt-1" style="font-size:13px;">Add some merch to get started!</p>
         </div>
       </div>
       <div class="cart-drawer-footer">
         <div class="cart-total">
           <span class="cart-total-label">Total</span>
-          <span class="cart-total-value" id="cart-total-value">$0.00</span>
+          <span class="cart-total-value text-accent" id="cart-total-value">$0.00</span>
         </div>
-        <a href="/checkout.html" class="btn btn-primary w-full btn-lg">Checkout</a>
-        <button id="cart-clear-btn" class="btn btn-ghost w-full btn-sm" style="margin-top:8px">Clear Cart</button>
+        <a href="/checkout.html" class="btn btn-primary btn-lg w-full">Checkout</a>
+        <button id="cart-clear-btn" class="btn btn-ghost w-full btn-sm mt-2">Clear Cart</button>
       </div>
     </aside>
     <div class="toast-container" id="toast-container"></div>`;
 
   document.body.insertAdjacentHTML('afterbegin', navHtml);
+
+  // Add scroll event listener for sticky navbar
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('main-navbar');
+    if (nav) {
+      if (window.scrollY > 20) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    }
+  });
+
 
   // Dropdown toggle logic
   document.addEventListener('click', function(e) {
@@ -288,21 +285,24 @@ window.renderAdminSidebar = function (activePage) {
 
   const sidebarHtml = `
     <aside class="sidebar" id="admin-sidebar">
-      <div style="padding:0 20px;margin-bottom:8px">
-        <a href="/index.html" style="font-family:'Outfit',sans-serif;font-weight:900;font-size:20px;color:var(--accent-red);text-decoration:none;display:flex;align-items:center;gap:8px;">METALLICA</a>
-        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px">Admin Panel</div>
+      <div style="padding:0 var(--space-lg); margin-bottom:var(--space-md)">
+        <a href="/index.html" style="font-family:var(--font-display); font-weight:900; font-size:24px; color:var(--color-white); text-decoration:none; letter-spacing:0.05em">METALLICA</a>
+        <div style="font-size:10px; color:var(--color-silver-dark); text-transform:uppercase; letter-spacing:0.15em; margin-top:2px">Admin Panel</div>
       </div>
-      <div style="padding:0 20px;margin:16px 0 8px">
-        <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg-hover);border-radius:var(--radius-md)">
-          <div style="width:36px;height:36px;background:var(--accent-red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff">${initial}</div>
+      
+      <div style="padding:0 var(--space-lg); margin:var(--space-lg) 0">
+        <div style="display:flex; align-items:center; gap:12px; padding:12px; background-color:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:var(--radius-md)">
+          <div style="width:40px; height:40px; background-color:var(--color-accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; font-size:18px; color:var(--color-white)">${initial}</div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${name}</div>
-            <div style="font-size:11px;color:var(--accent-red);text-transform:uppercase;font-weight:700">Administrator</div>
+            <div style="font-size:14px; font-weight:600; color:var(--text-primary); font-family:var(--font-display); text-transform:uppercase; letter-spacing:0.05em">${name}</div>
+            <div style="font-size:11px; color:var(--color-accent); text-transform:uppercase; font-weight:700">Administrator</div>
           </div>
         </div>
       </div>
+
       <span class="sidebar-section-title">Navigation</span>
       <ul class="sidebar-nav">${navLinks}</ul>
+      
       <span class="sidebar-section-title">Quick Links</span>
       <ul class="sidebar-nav">
         <li>
@@ -322,9 +322,10 @@ window.renderAdminSidebar = function (activePage) {
           </a>
         </li>
       </ul>
-      <div style="margin-top:auto;padding:20px;font-size:11px;color:var(--text-muted);text-align:center">
-        © 2024 Metallica Merch Store<br>
-        <span style="color:var(--accent-red)">For The Love of Metal</span>
+      
+      <div style="margin-top:auto; padding:var(--space-xl) var(--space-lg); font-size:11px; color:var(--text-muted); text-align:center">
+        © 2024 Metallica Merch<br>
+        <span style="color:var(--color-silver-dark); text-transform:uppercase; letter-spacing:0.1em; display:block; margin-top:4px;">For The Love of Metal</span>
       </div>
     </aside>`;
 

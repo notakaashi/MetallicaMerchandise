@@ -3,9 +3,9 @@ $(document).ready(function () {
 
   if (!id) {
     $('#order-container').html(`
-      <div style="text-align:center;padding:60px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
+      <div class="empty-state">
         <h2 style="margin-bottom:16px">Invalid Order ID</h2>
-        <a href="/orders" class="btn btn-primary">Back to Orders</a>
+        <a href="/orders.html" class="btn btn-primary">Back to Orders</a>
       </div>
     `);
     return;
@@ -39,7 +39,7 @@ $(document).ready(function () {
                 <div class="order-item-name">${item.product ? item.product.name : 'Product'}</div>
                 <div class="order-item-meta">Qty: ${item.quantity} × ₱${parseFloat(item.price).toFixed(2)}</div>
               </div>
-              <div style="font-weight:700;color:var(--accent-red)">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
+              <div style="font-weight:800;font-family:var(--font-display);color:var(--color-accent)">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
             </div>`;
         });
       }
@@ -54,18 +54,18 @@ $(document).ready(function () {
             <span class="badge ${statusBadge}">${tx.status}</span>
           </div>
           <div class="order-card-body">
-            <div style="background:#1e1e1e;padding:20px;border-radius:var(--radius);margin-bottom:24px">
-              <h3 style="margin-top:0;margin-bottom:12px;font-size:16px;color:#fff">Shipping Information</h3>
-              <p style="margin:0 0 4px 0;color:var(--text-muted)"><strong>Name:</strong> ${tx.full_name || 'N/A'}</p>
-              <p style="margin:0 0 4px 0;color:var(--text-muted)"><strong>Address:</strong> ${tx.address || 'N/A'}</p>
-              <p style="margin:0 0 4px 0;color:var(--text-muted)"><strong>City:</strong> ${tx.city || 'N/A'}</p>
-              <p style="margin:0;color:var(--text-muted)"><strong>ZIP Code:</strong> ${tx.zip || 'N/A'}</p>
+            <div class="auth-card" style="margin-bottom:var(--space-xl)">
+              <h3 style="margin-top:0;margin-bottom:var(--space-md);">Shipping Information</h3>
+              <p class="text-muted" style="margin:0 0 4px 0;"><strong>Name:</strong> ${tx.full_name || 'N/A'}</p>
+              <p class="text-muted" style="margin:0 0 4px 0;"><strong>Address:</strong> ${tx.address || 'N/A'}</p>
+              <p class="text-muted" style="margin:0 0 4px 0;"><strong>City:</strong> ${tx.city || 'N/A'}</p>
+              <p class="text-muted" style="margin:0;"><strong>ZIP Code:</strong> ${tx.zip || 'N/A'}</p>
             </div>
-            <h3 style="margin-top:0;margin-bottom:12px;font-size:16px;color:#fff">Order Items</h3>
+            <h3 style="margin-top:0;margin-bottom:var(--space-md);">Order Items</h3>
             ${itemsHtml}
             <div class="order-total-row">
               <span class="order-total-label">Order Total</span>
-              <span class="order-total-value">₱${parseFloat(tx.total_price).toFixed(2)}</span>
+              <span class="order-total-value text-accent">₱${parseFloat(tx.total_price).toFixed(2)}</span>
             </div>
           </div>
         </div>`;
@@ -79,9 +79,9 @@ $(document).ready(function () {
       if (xhr.status === 403) msg = 'You do not have permission to view this order';
       
       $('#order-container').html(`
-        <div style="text-align:center;padding:60px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg)">
-          <h2 style="margin-bottom:16px;color:var(--danger)">${msg}</h2>
-          <a href="/orders" class="btn btn-primary">Back to Orders</a>
+        <div class="empty-state">
+          <h2 style="margin-bottom:16px;color:var(--color-danger)">${msg}</h2>
+          <a href="/orders.html" class="btn btn-primary">Back to Orders</a>
         </div>
       `);
     }

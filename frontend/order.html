@@ -14,20 +14,20 @@
 
 <!-- Navbar injected by auth.js -->
 
-<div class="page-wrapper" style="padding-top:calc(var(--navbar-height) + 40px)">
+<div class="page-wrapper section-padding">
   <div class="container" style="max-width:860px">
     <div class="page-header">
       <div>
         <h1 class="page-header-title">Order Details</h1>
-        <p class="page-header-subtitle">View details for your specific order</p>
+        <p class="text-muted mt-1">View details for your specific order</p>
       </div>
-      <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+      <a href="/orders.html" class="btn btn-secondary">Back to Orders</a>
     </div>
 
     <div id="order-container">
-      <div style="text-align:center;padding:60px 0">
+      <div class="text-center section-padding">
         <div class="spinner"></div>
-        <p style="color:var(--text-muted);margin-top:16px">Loading order details...</p>
+        <p class="text-muted mt-2">Loading order details...</p>
       </div>
     </div>
   </div>

@@ -91,23 +91,26 @@ $(document).ready(function () {
     products.forEach(p => {
       let imgPath = p.images && p.images.length ? `${API_BASE}/uploads/${p.images[0].image_path}` : 'https://via.placeholder.com/400x400/121212/8a8a8a?text=No+Image';
       let stockBadge = p.stock > 0 
-        ? `<span class="stock-badge in-stock">In Stock</span>` 
-        : `<span class="stock-badge out-stock">Out of Stock</span>`;
+        ? `<span class="badge badge-success">In Stock</span>` 
+        : `<span class="badge badge-danger">Out of Stock</span>`;
       
       let html = `
         <div class="product-card" data-id="${p.id}" data-product='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
-          <a href="/product?id=${p.id}" class="product-img-wrap" style="display:block">
-            <img src="${imgPath}" class="product-img" alt="${p.name}">
-          </a>
-          <div class="product-info">
-            <a href="/product?id=${p.id}" class="product-name" style="text-decoration:none;color:inherit;">${p.name}</a>
-            <div class="product-price">₱${parseFloat(p.price).toFixed(2)}</div>
-            <div class="product-footer">
-              ${stockBadge}
-              <button class="btn btn-primary btn-sm add-to-cart-quick" data-id="${p.id}" ${p.stock <= 0 ? 'disabled' : ''}>
-                Add to Cart
-              </button>
+          <a href="/product?id=${p.id}" class="product-card-image-wrap" style="display:block">
+            <img src="${imgPath}" class="product-card-image" alt="${p.name}">
+            <div class="product-card-overlay">
+              <button class="btn btn-primary btn-sm w-full open-modal">Quick View</button>
             </div>
+          </a>
+          <div class="product-card-body">
+            <a href="/product?id=${p.id}" class="product-card-name" style="text-decoration:none;color:inherit;">${p.name}</a>
+            <div class="product-card-price">₱${parseFloat(p.price).toFixed(2)}</div>
+            <div class="mt-1">${stockBadge}</div>
+          </div>
+          <div class="product-card-footer">
+            <button class="btn btn-accent btn-sm w-full add-to-cart-quick" data-id="${p.id}" ${p.stock <= 0 ? 'disabled' : ''}>
+              ${p.stock <= 0 ? 'Sold Out' : 'Add to Cart'}
+            </button>
           </div>
         </div>
       `;
@@ -161,8 +164,8 @@ $(document).ready(function () {
     $('#detail-qty').val(1);
     
     let badge = p.stock > 0 
-        ? `<span class="stock-badge in-stock">In Stock (${p.stock} available)</span>` 
-        : `<span class="stock-badge out-stock">Out of Stock</span>`;
+        ? `<span class="badge badge-success">In Stock (${p.stock} available)</span>` 
+        : `<span class="badge badge-danger">Out of Stock</span>`;
     $('#detail-stock-badge').html(badge);
     
     $('#detail-add-btn').data('id', p.id).data('product', p).prop('disabled', p.stock <= 0);

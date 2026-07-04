@@ -21,40 +21,42 @@
 <div class="page-wrapper">
   <!-- HERO -->
   <section class="hero">
-    <div class="container">
-      <div class="hero-eyebrow">
-        <span></span> Official Merchandise
-      </div>
-      <h1 class="hero-title">
-        The <span>Heaviest</span><br>Merch in Metal
-      </h1>
+    <div class="hero-bg"></div>
+    <div class="lightning-effect"></div>
+    <div class="hero-content">
+      <img src="http://localhost:3001/uploads/Metallica_logo.png" alt="Metallica" class="hero-logo-img">
       <p class="hero-subtitle">
-        Tour tees, vinyls, hoodies, accessories and more — straight from the pit to your door.
+        The Heaviest Merch in Metal
       </p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <div class="hero-actions">
         <a href="#catalog" class="btn btn-primary btn-lg">Shop Now</a>
-        <a href="#catalog" class="btn btn-secondary btn-lg">Browse All</a>
+        <a href="/products.html" class="btn btn-secondary btn-lg">Browse All</a>
       </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-indicator-line"></div>
     </div>
   </section>
 
   <!-- CATALOG -->
-  <section class="catalog-section" id="catalog">
+  <section class="section-padding" id="catalog">
     <div class="container">
-      <div class="catalog-header">
-        <h2 class="catalog-title">Merch Catalog</h2>
+      <div class="text-center mb-4">
+        <h2>Merch Catalog</h2>
+        <div style="width: 60px; height: 1px; background-color: var(--color-silver-dark); margin: 0 auto;"></div>
       </div>
 
       <!-- Product Grid -->
-      <div class="product-grid" id="product-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:60px 0">
+      <div class="grid grid-cols-4" id="product-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:var(--space-4xl) 0">
           <div class="spinner"></div>
-          <p style="color:var(--text-muted);margin-top:16px">Loading merch...</p>
+          <p class="text-muted mt-2">Loading merch...</p>
         </div>
       </div>
 
       <!-- Pagination -->
-      <div class="pagination" id="pagination"></div>
+      <div id="pagination"></div>
     </div>
   </section>
 </div>

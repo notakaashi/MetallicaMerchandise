@@ -78,8 +78,8 @@ $(document).ready(function () {
     $('#detail-desc').text(p.description || 'No description available.');
     
     let badge = p.stock > 0 
-        ? `<span class="stock-badge in-stock">In Stock (${p.stock} available)</span>` 
-        : `<span class="stock-badge out-stock">Out of Stock</span>`;
+        ? `<span class="badge badge-success">In Stock (${p.stock})</span>` 
+        : `<span class="badge badge-danger">Sold Out</span>`;
     $('#detail-stock-badge').html(badge);
     
     $('#detail-add-btn').data('id', p.id).data('product', p).prop('disabled', p.stock <= 0);
@@ -112,13 +112,13 @@ $(document).ready(function () {
       let date = new Date(r.createdAt).toLocaleDateString();
       let stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
       html += `
-        <div class="review-item">
-          <div class="review-header">
-            <span class="reviewer-name">${r.user ? r.user.name : 'Unknown User'}</span>
-            <span class="review-date">${date}</span>
+        <div class="auth-card" style="margin-bottom:var(--space-md);background:transparent;border:none;border-bottom:1px solid var(--border-color);border-radius:0;padding:var(--space-md) 0;box-shadow:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-sm)">
+            <span style="font-weight:500;font-family:var(--font-display);letter-spacing:0.05em;text-transform:uppercase;">${r.user ? r.user.name : 'Unknown User'}</span>
+            <span class="text-muted" style="font-size:12px;letter-spacing:0.1em;">${date}</span>
           </div>
-          <div class="review-stars">${stars}</div>
-          <div class="review-comment">${r.comment ? r.comment.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</div>
+          <div style="color:var(--color-silver-light); font-size:16px; margin-bottom:var(--space-md);letter-spacing:2px;">${stars}</div>
+          <div style="color:var(--text-secondary); line-height:1.6;font-size:14px;">${r.comment ? r.comment.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</div>
         </div>
       `;
     });

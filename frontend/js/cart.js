@@ -70,9 +70,9 @@ window.Cart = {
     if (items.length === 0) {
       $body.html(`
         <div class="cart-empty">
-          <span class="cart-empty-icon">Cart</span>
+          <span class="cart-empty-icon"></span>
           <p>Your cart is empty</p>
-          <p style="font-size:13px;color:var(--text-muted)">Add some merch to get started!</p>
+          <p class="text-muted mt-1" style="font-size:13px;">Add some merch to get started!</p>
         </div>`);
       $('#cart-total-value').text('₱0.00');
       return;
@@ -82,7 +82,7 @@ window.Cart = {
     for (const item of items) {
       const imgTag = item.image
         ? `<img class="cart-item-image" src="${item.image}" alt="${item.name}" onerror="this.style.display='none'">`
-        : `<div class="cart-item-image" style="background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:6px;">Merch</div>`;
+        : `<div class="cart-item-image" style="background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:2px;">M</div>`;
 
       html += `
         <div class="cart-item" data-id="${item.id}">
@@ -90,7 +90,7 @@ window.Cart = {
           <div class="cart-item-details">
             <div class="cart-item-name">${item.name}</div>
             <div class="cart-item-price">₱${(item.price * item.quantity).toFixed(2)}</div>
-            <div class="cart-qty-control">
+            <div class="cart-qty-control mt-1">
               <button class="cart-qty-btn" data-action="dec" data-id="${item.id}">−</button>
               <span class="cart-qty-value">${item.quantity}</span>
               <button class="cart-qty-btn" data-action="inc" data-id="${item.id}">+</button>
@@ -126,9 +126,9 @@ window.loadProducts = function (page = 1, append = false) {
 
   if (!append) {
     $('#product-grid').html(`
-      <div style="grid-column:1/-1;text-align:center;padding:60px 0">
+      <div style="grid-column:1/-1;text-align:center;padding:var(--space-4xl) 0">
         <div class="spinner"></div>
-        <p style="color:var(--text-muted);margin-top:16px">Loading merch...</p>
+        <p class="text-muted mt-2">Loading merch...</p>
       </div>`);
     $('#pagination').html('');
   }
@@ -140,10 +140,10 @@ window.loadProducts = function (page = 1, append = false) {
 
     if (products.length === 0 && !append) {
       $('#product-grid').html(`
-        <div style="grid-column:1/-1;text-align:center;padding:80px 0">
-          <div style="font-size:56px;margin-bottom:16px">Merch</div>
-          <h3 style="color:var(--text-secondary)">No products found</h3>
-          <p style="color:var(--text-muted)">Try a different search term</p>
+        <div style="grid-column:1/-1;text-align:center;padding:var(--space-4xl) 0">
+          <div style="font-size:56px;margin-bottom:16px;font-family:var(--font-display);font-weight:900;color:var(--bg-hover)">M</div>
+          <h3 class="text-secondary">No products found</h3>
+          <p class="text-muted">Try a different search term</p>
         </div>`);
       return;
     }
@@ -151,8 +151,8 @@ window.loadProducts = function (page = 1, append = false) {
     let html = '';
     for (const p of products) {
       const img = p.images && p.images.length
-        ? `<img class="product-card-image" src="${API_BASE}/uploads/${p.images[0].image_path}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'product-card-image-placeholder\\'>Merch</div>'">`
-        : `<div class="product-card-image-placeholder">Merch</div>`;
+        ? `<img class="product-card-image" src="${API_BASE}/uploads/${p.images[0].image_path}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'product-card-image-placeholder\\'>M</div>'">`
+        : `<div class="product-card-image-placeholder">M</div>`;
 
       const stockBadge = p.stock > 10
         ? `<span class="badge badge-success">In Stock</span>`
@@ -169,12 +169,12 @@ window.loadProducts = function (page = 1, append = false) {
             </div>
           </div>
           <div class="product-card-body">
-            <a href="/product?id=${p.id}" class="product-card-name" style="text-decoration:none;color:inherit;display:block;">${p.name}</a>
+            <a href="/product?id=${p.id}" class="product-card-name">${p.name}</a>
             <div class="product-card-price">₱${parseFloat(p.price).toFixed(2)}</div>
-            <div style="margin-top:6px">${stockBadge}</div>
+            <div class="mt-1">${stockBadge}</div>
           </div>
           <div class="product-card-footer">
-            <button class="btn btn-primary btn-sm w-full add-to-cart-btn"
+            <button class="btn btn-accent btn-sm w-full add-to-cart-btn"
               data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" ${p.stock === 0 ? 'disabled' : ''}>
               ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
             </button>
@@ -192,8 +192,8 @@ window.loadProducts = function (page = 1, append = false) {
 function renderPagination(pagination) {
   $('#pagination').html(
     pagination.page < pagination.pages
-      ? `<div style="text-align:center;padding:20px;color:var(--text-muted)">Scroll for more...</div>`
-      : `<p style="color:var(--text-muted);text-align:center">You've seen it all!</p>`
+      ? `<div class="text-center text-muted mt-4">Scroll for more...</div>`
+      : `<p class="text-center text-muted mt-4">You've seen it all!</p>`
   );
 }
 
@@ -211,40 +211,42 @@ window.openProductModal = function (productId) {
 
     let imagesHtml = images.length
       ? `<div class="product-images-grid">${images.map(img => `<img src="${API_BASE}/uploads/${img.image_path}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`
-      : `<div style="background:var(--bg-tertiary);border-radius:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:72px">Merch</div>`;
+      : `<div style="background:var(--bg-tertiary);border-radius:var(--radius-sm);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:72px;font-family:var(--font-display);font-weight:900;color:var(--bg-hover)">M</div>`;
 
     const stockBadge = p.stock > 10
-      ? `<span class="badge badge-success">✓ In Stock (${p.stock})</span>`
+      ? `<span class="badge badge-success">In Stock (${p.stock})</span>`
       : p.stock > 0
         ? `<span class="badge badge-warning">Low Stock (${p.stock} left)</span>`
-        : `<span class="badge badge-danger">✗ Sold Out</span>`;
+        : `<span class="badge badge-danger">Sold Out</span>`;
 
     $('#product-modal-body').html(`
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
+      <div class="grid grid-cols-2" style="align-items:start">
         <div>${imagesHtml}</div>
         <div>
-          <h2 style="font-size:24px;font-weight:800;margin-bottom:12px">${p.name}</h2>
-          <div style="font-size:32px;font-weight:900;color:var(--accent-red);font-family:'Outfit',sans-serif;margin-bottom:12px">₱${parseFloat(p.price).toFixed(2)}</div>
-          <div style="margin-bottom:16px">${stockBadge}</div>
-          <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin-bottom:24px">${p.description || ''}</p>
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-            <label style="font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase">Qty</label>
+          <h2>${p.name}</h2>
+          <div style="font-size:32px;font-weight:300;color:var(--color-white);font-family:var(--font-body);margin-bottom:var(--space-md)">₱${parseFloat(p.price).toFixed(2)}</div>
+          <div class="mb-2">${stockBadge}</div>
+          <p>${p.description || ''}</p>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:var(--space-lg)">
+            <label class="form-label" style="margin:0">Qty</label>
             <div class="cart-qty-control">
               <button class="cart-qty-btn" id="modal-qty-dec">−</button>
               <span class="cart-qty-value" id="modal-qty">1</span>
               <button class="cart-qty-btn" id="modal-qty-inc">+</button>
             </div>
           </div>
-          <button class="btn btn-primary btn-lg w-full" id="modal-add-to-cart"
-            data-id="${p.id}" data-name="${p.name}" data-price="${p.price}"
-            ${p.stock === 0 ? 'disabled' : ''} style="margin-bottom:10px">
-            ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
-          </button>
-          <a href="/checkout.html" class="btn btn-secondary btn-lg w-full" style="text-align:center">Checkout →</a>
+          <div class="grid grid-cols-2" style="gap:var(--space-md)">
+            <button class="btn btn-accent btn-lg w-full" id="modal-add-to-cart"
+              data-id="${p.id}" data-name="${p.name}" data-price="${p.price}"
+              ${p.stock === 0 ? 'disabled' : ''}>
+              ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
+            </button>
+            <a href="/checkout.html" class="btn btn-secondary btn-lg w-full text-center">Checkout →</a>
+          </div>
         </div>
       </div>`);
   }).fail(function () {
-    $('#product-modal-body').html('<p style="text-align:center;color:var(--danger)">Failed to load product details.</p>');
+    $('#product-modal-body').html('<p class="text-center text-accent">Failed to load product details.</p>');
   });
 };
 
@@ -264,13 +266,13 @@ window.renderCheckoutSummary = function () {
         <div class="order-item-name">${item.name}</div>
         <div class="order-item-meta">Qty: ${item.quantity} × ₱${item.price.toFixed(2)}</div>
       </div>
-      <div style="font-weight:700;color:var(--accent-red)">₱${(item.price * item.quantity).toFixed(2)}</div>
+      <div style="font-weight:800;font-family:var(--font-display);color:var(--color-accent)">₱${(item.price * item.quantity).toFixed(2)}</div>
     </div>`).join('');
 
   html += `
     <div class="order-total-row">
       <span class="order-total-label">Total</span>
-      <span class="order-total-value">₱${window.Cart.total().toFixed(2)}</span>
+      <span class="order-total-value text-accent">₱${window.Cart.total().toFixed(2)}</span>
     </div>`;
 
   $summary.html(html);
@@ -290,10 +292,9 @@ window.loadMyOrders = function () {
       const txs = data.transactions;
       if (!txs.length) {
         $('#orders-container').html(`
-          <div style="text-align:center;padding:80px 0;color:var(--text-muted)">
-            <div style="font-size:56px;margin-bottom:16px">Box</div>
-            <h3>No orders yet</h3>
-            <p>Start shopping and place your first order!</p>
+          <div class="text-center section-padding">
+            <h3 class="text-secondary">No orders yet</h3>
+            <p class="text-muted">Start shopping and place your first order!</p>
             <a href="/index.html" class="btn btn-primary mt-3">Shop Now</a>
           </div>`);
         return;
@@ -306,7 +307,7 @@ window.loadMyOrders = function () {
         for (const item of tx.items || []) {
           const img = item.product && item.product.images && item.product.images.length
             ? `<img class="order-item-img" src="${API_BASE}/uploads/${item.product.images[0].image_path}" alt="${item.product.name}">`
-            : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg-tertiary);border-radius:6px">Merch</div>`;
+            : `<div class="order-item-img" style="display:flex;align-items:center;justify-content:center;font-size:24px;font-family:var(--font-display);font-weight:900;background:var(--bg-tertiary);color:var(--bg-hover)">M</div>`;
 
           itemsHtml += `
             <div class="order-item-row">
@@ -315,7 +316,7 @@ window.loadMyOrders = function () {
                 <div class="order-item-name">${item.product ? item.product.name : 'Product'}</div>
                 <div class="order-item-meta">Qty: ${item.quantity} × ₱${parseFloat(item.price).toFixed(2)}</div>
               </div>
-              <div style="font-weight:700;color:var(--accent-red)">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
+              <div style="font-weight:800;font-family:var(--font-display);color:var(--color-accent)">₱${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
             </div>`;
         }
 
@@ -323,10 +324,10 @@ window.loadMyOrders = function () {
           <div class="order-card">
             <div class="order-card-header">
               <div>
-                <a href="/order?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
-                  <div class="order-id">Order <span>#${tx.id}</span></div>
+                <a href="/order.html?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
+                  <div class="order-id">Order <span class="text-accent">#${tx.id}</span></div>
                 </a>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                <div class="text-muted mt-1" style="font-size:12px;">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
               </div>
               <span class="badge ${statusBadge}">${tx.status}</span>
             </div>
@@ -334,7 +335,7 @@ window.loadMyOrders = function () {
               ${itemsHtml}
               <div class="order-total-row">
                 <span class="order-total-label">Order Total</span>
-                <span class="order-total-value">₱${parseFloat(tx.total_price).toFixed(2)}</span>
+                <span class="order-total-value text-accent">₱${parseFloat(tx.total_price).toFixed(2)}</span>
               </div>
             </div>
           </div>`;
@@ -343,7 +344,7 @@ window.loadMyOrders = function () {
     },
     error: function () {
       window.showToast('Failed to load orders', 'error');
-      $('#orders-container').html('<p style="text-align:center;color:var(--danger)">Failed to load orders.</p>');
+      $('#orders-container').html('<p class="text-center text-accent">Failed to load orders.</p>');
     },
   });
 };
