@@ -86,14 +86,29 @@ $(document).ready(function () {
 
     let galleryHtml = '';
     if (p.images && p.images.length) {
-      p.images.forEach(img => {
-        galleryHtml += `<img src="${API_BASE}/uploads/${img.image_path}" alt="Product Image">`;
+      $('#main-product-image').attr('src', `${API_BASE}/uploads/${p.images[0].image_path}`);
+      
+      p.images.forEach((img, idx) => {
+        let activeClass = idx === 0 ? 'active' : '';
+        galleryHtml += `
+          <div class="gallery-thumbnail ${activeClass}" onclick="updateMainImage('${API_BASE}/uploads/${img.image_path}', this)">
+            <img src="${API_BASE}/uploads/${img.image_path}" alt="Product Thumbnail">
+          </div>
+        `;
       });
     } else {
-      galleryHtml = `<img src="https://via.placeholder.com/400x400/121212/8a8a8a?text=No+Image" alt="No Image">`;
+      let noImg = 'https://via.placeholder.com/400x400/121212/8a8a8a?text=No+Image';
+      $('#main-product-image').attr('src', noImg);
     }
     $('#detail-gallery').html(galleryHtml);
   }
+
+  // Global function so it can be called from onclick attribute
+  window.updateMainImage = function(src, el) {
+    $('#main-product-image').attr('src', src);
+    $('.gallery-thumbnail').removeClass('active');
+    $(el).addClass('active');
+  };
 
   function renderReviews(data) {
     const $stats = $('#reviews-stats');

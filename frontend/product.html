@@ -6,7 +6,7 @@
   <title>Product Details — Metallica Merch Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/main.css?v=9">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
 </head>
@@ -21,27 +21,32 @@
     
       <div id="product-content" style="display:none">
         <div class="grid grid-cols-2" style="align-items:start;margin-bottom:var(--space-4xl)">
-          <div class="product-images-grid" id="detail-gallery">
-            <!-- Images go here -->
+          <div class="product-gallery">
+            <div class="main-image-wrapper">
+              <img id="main-product-image" src="" alt="Main Product Image">
+            </div>
+            <div class="thumbnail-strip" id="detail-gallery">
+              <!-- Thumbnails go here -->
+            </div>
           </div>
           <div>
-            <h1 id="detail-name" style="margin-bottom:var(--space-sm)"></h1>
+            <h1 id="detail-name" class="product-title" style="margin-bottom:var(--space-sm)"></h1>
             <div id="detail-price" style="font-size:36px;color:var(--color-white);font-weight:300;font-family:var(--font-body);margin-bottom:var(--space-md)"></div>
             <div id="detail-stock-badge" style="margin-bottom:var(--space-lg)"></div>
             <p id="detail-desc" style="color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-xl)"></p>
             
-            <div class="qty-selector">
-              <label class="form-label" style="margin:0">Qty</label>
-              <div class="cart-qty-control">
-                <button class="cart-qty-btn" onclick="let v = parseInt($('#detail-qty').val()); if(v>1) $('#detail-qty').val(v-1);">−</button>
-                <input type="number" id="detail-qty" class="cart-qty-value" style="width:40px;background:none;border:none;color:var(--color-white);text-align:center" value="1" min="1">
-                <button class="cart-qty-btn" onclick="$('#detail-qty').val(parseInt($('#detail-qty').val())+1)">+</button>
+            <div class="qty-selector" style="margin-bottom:var(--space-2xl); display:flex; align-items:center; gap:var(--space-md);">
+              <label class="form-label" style="margin:0; font-family:var(--font-display); font-size:14px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary);">Quantity</label>
+              <div class="product-qty-control">
+                <button class="product-qty-btn" onclick="let v = parseInt($('#detail-qty').val()); if(v>1) $('#detail-qty').val(v-1);">−</button>
+                <input type="number" id="detail-qty" class="product-qty-value" value="1" min="1">
+                <button class="product-qty-btn" onclick="$('#detail-qty').val(parseInt($('#detail-qty').val())+1)">+</button>
               </div>
             </div>
             
             <div class="grid grid-cols-2" style="gap:var(--space-md)">
-              <button class="btn btn-accent btn-lg w-full" id="detail-add-btn">Add to Cart</button>
-              <a href="/checkout.html" class="btn btn-secondary btn-lg w-full text-center">Checkout →</a>
+              <button class="btn btn-primary w-full" id="detail-add-btn">Add to Cart</button>
+              <a href="/checkout.html" class="btn btn-outline w-full text-center">Checkout →</a>
             </div>
           </div>
         </div>
@@ -90,7 +95,7 @@
 
   <script src="/js/auth.js"></script>
   <script src="/js/cart.js"></script>
-  <script src="/js/product.js?v=7"></script>
+  <script src="/js/product.js?v=8"></script>
   <script>
     $(document).ready(function () {
       window.renderNavbar({ showCart: true, showSearch: true });
