@@ -8,6 +8,8 @@ $(document).ready(function () {
     return;
   }
 
+  let isEditingReview = false;
+
   function fetchProduct() {
     $.ajax({
       url: `${API_BASE}/api/products/${productId}`,
@@ -50,15 +52,27 @@ $(document).ready(function () {
       headers: window.Auth.authHeaders(),
       success: function(data) {
         if (data.eligible) {
+          isEditingReview = false;
           $('#review-msg').hide();
           $('#review-form-container').show();
+          $('#submit-review-btn').text('Submit Review');
         } else {
-          $('#review-form-container').hide();
           if (data.reason === 'already_reviewed') {
-            $('#review-msg').text("You've already reviewed this product.").show();
+            isEditingReview = true;
+            $('#review-msg').hide();
+            $('#review-form-container').hide(); // Hide initially, wait for Edit button click
+            $('#submit-review-btn').text('Update Review');
+            
+            if (data.existingReview) {
+              window.currentUserReview = data.existingReview;
+              $('#review-rating').val(data.existingReview.rating);
+              $('#review-comment').val(data.existingReview.comment);
+            }
           } else if (data.reason === 'not_purchased') {
+            $('#review-form-container').hide();
             $('#review-msg').text("Only customers who have purchased and received this product can leave a review.").show();
           } else {
+            $('#review-form-container').hide();
             $('#review-msg').text("You are not eligible to review this product at this time.").show();
           }
         }
@@ -123,13 +137,22 @@ $(document).ready(function () {
     $stats.text(`${data.averageRating.toFixed(1)} out of 5 stars (${data.count} review${data.count === 1 ? '' : 's'})`);
     
     let html = '';
+    let currentUser = window.Auth.getUser();
+    
     data.reviews.forEach(r => {
       let date = new Date(r.createdAt).toLocaleDateString();
       let stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+      
+      let editBtnHtml = '';
+      if (currentUser && currentUser.id === r.user_id) {
+        editBtnHtml = `<button class="btn btn-sm btn-outline user-edit-review-btn" style="margin-left:auto; margin-right: 12px; padding: 4px 12px; font-size: 12px;">Edit</button>`;
+      }
+      
       html += `
         <div class="auth-card" style="margin-bottom:var(--space-md);background:transparent;border:none;border-bottom:1px solid var(--border-color);border-radius:0;padding:var(--space-md) 0;box-shadow:none;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-sm)">
             <span style="font-weight:500;font-family:var(--font-display);letter-spacing:0.05em;text-transform:uppercase;">${r.user ? r.user.name : 'Unknown User'}</span>
+            ${editBtnHtml}
             <span class="text-muted" style="font-size:12px;letter-spacing:0.1em;">${date}</span>
           </div>
           <div style="color:var(--color-silver-light); font-size:16px; margin-bottom:var(--space-md);letter-spacing:2px;">${stars}</div>
@@ -139,6 +162,11 @@ $(document).ready(function () {
     });
     $list.html(html);
   }
+
+  $(document).on('click', '.user-edit-review-btn', function() {
+    $('#review-form-container').slideDown();
+    $('html, body').animate({ scrollTop: $('#review-form-container').offset().top - 100 }, 500);
+  });
 
   $(document).on('click', '#detail-add-btn', function() {
     let p = $(this).data('product');
@@ -166,24 +194,27 @@ $(document).ready(function () {
         comment: $('#review-comment').val()
       };
 
+      const method = isEditingReview ? 'PUT' : 'POST';
+
       $.ajax({
         url: `${API_BASE}/api/products/${productId}/reviews`,
-        method: 'POST',
+        method: method,
         headers: window.Auth.authHeaders(),
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function () {
-          window.showToast('Review submitted successfully!', 'success');
-          $('#review-form')[0].reset();
+          window.showToast(isEditingReview ? 'Review updated successfully!' : 'Review submitted successfully!', 'success');
+          if (!isEditingReview) $('#review-form')[0].reset();
+          if (isEditingReview) $('#review-form-container').slideUp();
           fetchReviews();
-          checkEligibility(); // to hide the form again
+          checkEligibility(); // Refresh state
         },
         error: function (xhr) {
-          const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Failed to submit review';
+          const msg = xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save review';
           window.showToast(msg, 'error');
         },
         complete: function () {
-          $btn.prop('disabled', false).text('Submit Review');
+          $btn.prop('disabled', false).text(isEditingReview ? 'Update Review' : 'Submit Review');
         }
       });
     }

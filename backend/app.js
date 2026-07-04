@@ -24,12 +24,14 @@ const userRoutes        = require('./src/routes/users');
 const productRoutes     = require('./src/routes/products');
 const transactionRoutes = require('./src/routes/transactions');
 const dashboardRoutes   = require('./src/routes/dashboard');
+const reviewRoutes      = require('./src/routes/reviews');
 
 app.use('/api/auth',         authRoutes);
 app.use('/api/users',        userRoutes);
 app.use('/api/products',     productRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard',    dashboardRoutes);
+app.use('/api/reviews',      reviewRoutes);
 
 // ─── Health check ─────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));

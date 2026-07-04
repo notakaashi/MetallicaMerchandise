@@ -221,6 +221,24 @@ p {
   border-color: var(--color-white);
   color: var(--color-white);
 }
+.btn-secondary {
+  background-color: var(--bg-tertiary);
+  color: var(--color-white);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--color-silver);
+}
+.btn-danger {
+  background-color: rgba(234, 84, 85, 0.1);
+  color: #ea5455;
+  border: 1px solid rgba(234, 84, 85, 0.3);
+}
+.btn-danger:hover {
+  background-color: #ea5455;
+  color: var(--color-white);
+}
 /* ==========================================================================
    NAVIGATION
    ========================================================================== */

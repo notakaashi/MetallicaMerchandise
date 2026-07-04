@@ -15,6 +15,7 @@ $(document).ready(function () {
   if (page === 'users') initUsersTable();
   if (page === 'products') initProductsTable();
   if (page === 'transactions') initTransactionsTable();
+  if (page === 'reviews') initReviewsTable();
 });
 
 // =============================================
@@ -412,3 +413,57 @@ function initTransactionsTable() {
     });
   });
 }
+
+// =============================================
+// REVIEWS TABLE
+// =============================================
+function initReviewsTable() {
+  $.ajax({
+    url: `${API_BASE}/api/reviews`,
+    headers: window.Auth.authHeaders(),
+    success: function (data) {
+      if ($.fn.DataTable.isDataTable('#reviews-table')) $('#reviews-table').DataTable().destroy();
+      $('#reviews-table').DataTable({
+        data: data.reviews,
+        columns: [
+          { data: 'id', title: '#', width: '50px' },
+          { data: 'user', title: 'User', render: (u) => u ? u.name : 'Unknown' },
+          { data: 'product', title: 'Product', render: (p) => p ? p.name : 'Unknown' },
+          { data: 'rating', title: 'Rating', render: (d) => `${d} Stars` },
+          { data: 'comment', title: 'Comment', render: (d) => d ? (d.length > 30 ? d.substring(0,30)+'...' : d) : '-' },
+          { data: 'createdAt', title: 'Date', render: (d) => new Date(d).toLocaleDateString() },
+          {
+            data: 'id', title: 'Actions', orderable: false,
+            render: (id, _, row) => {
+              return `<div style="display:flex;gap:6px">
+                <button class="btn btn-sm btn-danger delete-review-btn" data-id="${id}">Delete</button>
+              </div>`;
+            },
+          },
+        ],
+        pageLength: 10,
+        dom: '<"flex justify-between items-center mb-2"lf>t<"flex justify-between items-center mt-2"ip>',
+        language: { search: '', searchPlaceholder: 'Search reviews...' },
+        order: [[5, 'desc']],
+      });
+    },
+    error: () => window.showToast('Failed to load reviews', 'error'),
+  });
+
+  $(document).on('click', '.delete-review-btn', function () {
+    const id = $(this).data('id');
+    if (confirm(`Are you sure you want to delete review #${id}?`)) {
+      $.ajax({
+        url: `${API_BASE}/api/reviews/${id}`,
+        method: 'DELETE',
+        headers: window.Auth.authHeaders(),
+        success: () => {
+          window.showToast('Review deleted', 'success');
+          initReviewsTable();
+        },
+        error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to delete review', 'error'),
+      });
+    }
+  });
+}
+

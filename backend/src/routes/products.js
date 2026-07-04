@@ -45,6 +45,7 @@ router.get('/:id', productController.getProduct);
 router.get('/:id/reviews', reviewController.getProductReviews);
 router.get('/:id/reviews/eligibility', auth, reviewController.checkEligibility);
 router.post('/:id/reviews', auth, reviewController.createReview);
+router.put('/:id/reviews', auth, reviewController.updateReview);
 
 router.post('/', adminMiddleware, upload.array('images', 5), productController.createProduct);
 router.put('/:id', adminMiddleware, upload.array('images', 5), productController.updateProduct);
