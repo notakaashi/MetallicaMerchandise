@@ -54,6 +54,11 @@ $(document).ready(function () {
     let url = `${API_BASE}/api/products?page=${currentPage}&limit=12&sort=${currentSort}`;
     if (currentCategory !== 'all') url += `&category=${currentCategory}`;
     if (searchQuery) url += `&q=${encodeURIComponent(searchQuery)}`;
+    
+    const minPrice = $('#min-price').val();
+    const maxPrice = $('#max-price').val();
+    if (minPrice) url += `&min_price=${encodeURIComponent(minPrice)}`;
+    if (maxPrice) url += `&max_price=${encodeURIComponent(maxPrice)}`;
 
     if (!append) {
       $('#products-grid').html('<div style="grid-column:1/-1;text-align:center;color:#8a8a8a;padding:40px">Loading products...</div>');
@@ -145,6 +150,11 @@ $(document).ready(function () {
     $('.category-pill').removeClass('active');
     $(this).addClass('active');
     currentCategory = $(this).data('category');
+    currentPage = 1;
+    fetchProducts();
+  });
+
+  $('#apply-filters-btn').on('click', function() {
     currentPage = 1;
     fetchProducts();
   });

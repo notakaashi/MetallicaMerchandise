@@ -32,6 +32,15 @@ exports.getAllProducts = async (req, res) => {
         { description: { [Op.like]: '%' + req.query.q + '%' } },
       ];
     }
+    if (req.query.min_price || req.query.max_price) {
+      whereClause.price = {};
+      if (req.query.min_price) {
+        whereClause.price[Op.gte] = parseFloat(req.query.min_price);
+      }
+      if (req.query.max_price) {
+        whereClause.price[Op.lte] = parseFloat(req.query.max_price);
+      }
+    }
 
     let result = await Product.findAndCountAll({
       where: whereClause,
