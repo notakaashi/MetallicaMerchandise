@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/main.css?v=2">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -94,7 +94,11 @@
           <div class="form-group" style="grid-column:1/-1">
             <label class="form-label">Product Images (up to 5)</label>
             <div class="image-upload-zone" id="image-upload-zone" onclick="document.getElementById('edit-images').click()">
-              <div style="font-size:32px;margin-bottom:8px">Upload</div>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
               <div style="font-weight:600;color:var(--text-secondary)">Click to upload images</div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:4px">JPG, PNG, GIF, WebP — max 5MB each</div>
             </div>
