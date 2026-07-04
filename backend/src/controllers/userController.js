@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 exports.getAllUsers = async (req, res) => {
   try {
     let users = await User.findAll({
-      attributes: ['id', 'name', 'email', 'role', 'status'],
+      attributes: ['id', 'name', 'email', 'role', 'status', 'createdAt'],
       order: [['createdAt', 'DESC']],
     });
     res.json({ users: users });

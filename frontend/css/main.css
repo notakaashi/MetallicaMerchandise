@@ -1571,6 +1571,113 @@ p {
 .mb-5 { margin-bottom: var(--space-2xl); }
 
 /* ==========================================================================
+   FORMS & AUTHENTICATION
+   ========================================================================== */
+.auth-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--nav-height) + var(--space-2xl)) var(--space-lg) var(--space-2xl);
+  background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  z-index: 0;
+  pointer-events: none;
+}
+
+.auth-box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: var(--space-3xl);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+.auth-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  color: var(--color-white);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.auth-tagline {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-silver-dark);
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: var(--space-xl) 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.auth-divider::before { margin-right: var(--space-md); }
+.auth-divider::after { margin-left: var(--space-md); }
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  color: var(--color-white);
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form-control {
+  width: 100%;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--color-white);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 15px;
+  transition: border-color var(--transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--color-silver);
+  outline: none;
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
 @media (max-width: 1024px) {
@@ -1655,6 +1762,187 @@ p {
   color: var(--color-white);
   border-right: 3px solid var(--color-accent);
 }
+
+/* ==========================================================================
+   ADMIN DASHBOARD COMPONENTS
+   ========================================================================== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-2xl);
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page-header-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-white);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.kpi-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.kpi-value {
+  font-family: var(--font-body);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.kpi-icon {
+  position: absolute;
+  top: var(--space-xl);
+  right: var(--space-xl);
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--color-accent);
+  opacity: 0.2;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+}
+
+.chart-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xl);
+}
+
+.chart-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+/* ==========================================================================
+   BADGES, CARDS & DATATABLES
+   ========================================================================== */
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.card-body {
+  padding: var(--space-xl);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.badge-danger { color: #ea5455; background-color: rgba(234, 84, 85, 0.12); }
+.badge-danger::before { background-color: #ea5455; }
+.badge-info { color: #00cfe8; background-color: rgba(0, 207, 232, 0.12); }
+.badge-info::before { background-color: #00cfe8; }
+.badge-success { color: #28c76f; background-color: rgba(40, 199, 111, 0.12); }
+.badge-success::before { background-color: #28c76f; }
+.badge-silver { color: #a0a0a0; background-color: rgba(160, 160, 160, 0.12); }
+.badge-silver::before { background-color: #a0a0a0; }
+.badge-warning { color: #ff9f43; background-color: rgba(255, 159, 67, 0.12); }
+.badge-warning::before { background-color: #ff9f43; }
+
+/* DataTables Styling Override */
+.dataTable {
+  width: 100% !important;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+}
+.dataTable thead th {
+  text-align: left;
+  padding: 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-white);
+  border-bottom: 1px solid var(--border-color) !important;
+}
+.dataTable tbody td {
+  padding: 16px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+.dataTable tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 6px 12px;
+  margin-left: 4px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  color: var(--text-secondary) !important;
+  cursor: pointer;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--border-color);
+  color: var(--color-white) !important;
+}
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--color-white);
+  padding: 6px 12px;
+  border-radius: 4px;
+  outline: none;
+  margin-left: 8px;
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: var(--color-silver);
+}
+
 
  / *   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
        P R O D U C T S   S I D E B A R   L A Y O U T 
