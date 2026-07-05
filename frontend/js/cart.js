@@ -22,10 +22,10 @@ window.Cart = {
       existing.quantity = Math.min(existing.quantity + qty, 99);
     } else {
       items.push({
-        id:       product.id,
-        name:     product.name,
-        price:    parseFloat(product.price),
-        image:    product.images && product.images.length ? product.images[0].image_path : null,
+        id: product.id,
+        name: product.name,
+        price: parseFloat(product.price),
+        image: product.images && product.images.length ? product.images[0].image_path : null,
         quantity: qty,
       });
     }
@@ -104,7 +104,7 @@ window.Cart = {
     $('#cart-total-value').text(`₱${this.total().toFixed(2)}`);
   },
 
-  open:  function () { $('#cart-overlay, #cart-drawer').addClass('open'); $('body').css('overflow', 'hidden'); this.renderDrawer(); },
+  open: function () { $('#cart-overlay, #cart-drawer').addClass('open'); $('body').css('overflow', 'hidden'); this.renderDrawer(); },
   close: function () { $('#cart-overlay, #cart-drawer').removeClass('open'); $('body').css('overflow', ''); },
 };
 
@@ -135,8 +135,8 @@ window.loadProducts = function (page = 1, append = false) {
 
   $.get(url, function (data) {
     const { products, pagination } = data;
-    totalPages   = pagination.pages;
-    currentPage  = pagination.page;
+    totalPages = pagination.pages;
+    currentPage = pagination.page;
 
     if (products.length === 0 && !append) {
       $('#product-grid').html(`
@@ -324,7 +324,7 @@ window.loadMyOrders = function () {
           <div class="order-card">
             <div class="order-card-header">
               <div>
-                <a href="/order.html?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
+              <a href="/order?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
                   <div class="order-id">Order <span class="text-accent">#${tx.id}</span></div>
                 </a>
                 <div class="text-muted mt-1" style="font-size:12px;">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
@@ -356,14 +356,14 @@ $(document).ready(function () {
   window.Cart.updateBadge();
 
   // Cart open/close
-  $(document).on('click', '#cart-open-btn',              () => window.Cart.open());
+  $(document).on('click', '#cart-open-btn', () => window.Cart.open());
   $(document).on('click', '#cart-overlay, #cart-close-btn', () => window.Cart.close());
 
   // Cart qty controls
   $(document).on('click', '.cart-qty-btn', function () {
-    const id     = parseInt($(this).data('id'));
+    const id = parseInt($(this).data('id'));
     const action = $(this).data('action');
-    const item   = window.Cart.get().find(i => i.id === id);
+    const item = window.Cart.get().find(i => i.id === id);
     if (!item) return;
     window.Cart.updateQty(id, action === 'inc' ? item.quantity + 1 : item.quantity - 1);
   });
@@ -429,7 +429,7 @@ $(document).ready(function () {
   let scrollTimeout;
   $(window).on('scroll', function () {
     if (scrollTimeout) clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(function() {
+    scrollTimeout = setTimeout(function () {
       if ($(window).scrollTop() + $(window).height() >= $(document).height() - 300) {
         if (!isLoading && currentPage < totalPages) {
           window.loadProducts(currentPage + 1, true);
@@ -474,7 +474,7 @@ $(document).ready(function () {
       url: API_BASE + '/api/users/profile',
       type: 'GET',
       headers: window.Auth.authHeaders(),
-      success: function(res) {
+      success: function (res) {
         const profile = res.user;
         $('#checkout-name').val(profile.name);
         $('#checkout-email').val(profile.email);
@@ -488,11 +488,11 @@ $(document).ready(function () {
     $('#checkout-form').validate({
       rules: {
         full_name: { required: true, minlength: 2 },
-        email:     { required: true, email: true },
-        phone:     { required: true },
-        address:   { required: true, minlength: 5 },
-        city:      { required: true },
-        zip:       { required: true },
+        email: { required: true, email: true },
+        phone: { required: true },
+        address: { required: true, minlength: 5 },
+        city: { required: true },
+        zip: { required: true },
       },
       submitHandler: function () {
         if (!window.Auth.isLoggedIn()) {
@@ -511,7 +511,7 @@ $(document).ready(function () {
           method: 'POST',
           contentType: 'application/json',
           headers: window.Auth.authHeaders(),
-          data: JSON.stringify({ 
+          data: JSON.stringify({
             items: cartItems.map(i => ({ product_id: i.id, quantity: i.quantity })),
             full_name: $('#checkout-form input[name="full_name"]').val(),
             address: $('#checkout-form input[name="address"]').val(),
