@@ -38,6 +38,11 @@ const Transaction = sequelize.define('Transaction', {
       allowNull: false,
       defaultValue: 0.00,
     },
+    payment_method: {
+      type: DataTypes.ENUM('cash', 'card'),
+      defaultValue: 'card',
+      allowNull: false,
+    },
   }, {
     tableName: 'transactions',
     timestamps: true,

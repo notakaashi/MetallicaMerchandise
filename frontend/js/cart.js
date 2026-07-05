@@ -469,14 +469,27 @@ $(document).ready(function () {
   if ($('#checkout-form').length) {
     window.renderCheckoutSummary();
 
-    // Pre-fill email from logged-in user
-    const user = window.Auth.getUser();
-    if (user) $('#checkout-email').val(user.email);
+    // Pre-fill from logged-in user profile
+    $.ajax({
+      url: API_BASE + '/api/users/profile',
+      type: 'GET',
+      headers: window.Auth.authHeaders(),
+      success: function(res) {
+        const profile = res.user;
+        $('#checkout-name').val(profile.name);
+        $('#checkout-email').val(profile.email);
+        if (profile.phone) $('#checkout-phone').val(profile.phone);
+        if (profile.address) $('#checkout-address').val(profile.address);
+        if (profile.city) $('#checkout-city').val(profile.city);
+        if (profile.zip) $('#checkout-zip').val(profile.zip);
+      }
+    });
 
     $('#checkout-form').validate({
       rules: {
         full_name: { required: true, minlength: 2 },
         email:     { required: true, email: true },
+        phone:     { required: true },
         address:   { required: true, minlength: 5 },
         city:      { required: true },
         zip:       { required: true },
@@ -503,7 +516,8 @@ $(document).ready(function () {
             full_name: $('#checkout-form input[name="full_name"]').val(),
             address: $('#checkout-form input[name="address"]').val(),
             city: $('#checkout-form input[name="city"]').val(),
-            zip: $('#checkout-form input[name="zip"]').val()
+            zip: $('#checkout-form input[name="zip"]').val(),
+            payment_method: $('#checkout-form input[name="payment_method"]:checked').val() || 'card'
           }),
           success: function (data) {
             window.Cart.clear();

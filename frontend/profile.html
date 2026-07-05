@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — Metallica Merch Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+</head>
+<body>
+
+<!-- Navbar injected by auth.js -->
+
+<div class="page-wrapper" style="padding-top: 100px; padding-bottom: 60px;">
+  <div class="container" style="max-width: 800px;">
+    <div class="header-section" style="text-align: center; margin-bottom: 2rem;">
+      <h2>My Profile</h2>
+      <div style="width: 60px; height: 1px; background-color: var(--color-silver-dark); margin: 0 auto;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+      <form id="profile-form" novalidate>
+        
+        <div style="text-align: center; margin-bottom: 2rem; display: flex; flex-direction: column; align-items: center;">
+          <div id="avatar-preview-container" style="width: 120px; height: 120px; border-radius: 50%; background-color: var(--color-charcoal-light); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid var(--border-color);">
+            <svg id="avatar-placeholder" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <img id="avatar-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          </div>
+          
+          <label class="btn btn-secondary btn-sm" for="avatar-upload" style="cursor: pointer;">
+            Change Avatar
+            <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;">
+          </label>
+        </div>
+
+        <div class="grid grid-cols-2" style="gap:var(--space-md)">
+          <div class="form-group" style="grid-column:1/-1; display:flex; gap:var(--space-md);">
+            <div style="flex:1;">
+              <label class="form-label" for="profile-name">Full Name</label>
+              <input type="text" id="profile-name" name="name" class="form-control" required>
+            </div>
+            <div style="flex:1;">
+              <label class="form-label" for="profile-email">Email Address</label>
+              <input type="email" id="profile-email" name="email" class="form-control" disabled style="opacity: 0.7;">
+            </div>
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="profile-phone">Phone Number</label>
+            <input type="tel" id="profile-phone" name="phone" class="form-control" placeholder="e.g. +1 234 567 8900">
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label" for="profile-address">Shipping Address</label>
+            <input type="text" id="profile-address" name="address" class="form-control" placeholder="123 Metal Street">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-city">City</label>
+            <input type="text" id="profile-city" name="city" class="form-control" placeholder="San Francisco">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-zip">ZIP / Postal Code</label>
+            <input type="text" id="profile-zip" name="zip" class="form-control" placeholder="94105">
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-top: var(--space-xl);">
+          <button type="submit" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js?v=8"></script>
+<script src="/js/cart.js?v=8"></script>
+<script src="/js/profile.js?v=1"></script>
+<script>
+  $(document).ready(function () {
+    window.Auth.requireAuth('/login.html');
+    window.renderNavbar({ showCart: true, showSearch: true });
+  });
+</script>
+</body>
+</html>

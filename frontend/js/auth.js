@@ -98,14 +98,18 @@ window.renderNavbar = function (opts = {}) {
 
   let userHtml;
   if (user && window.Auth.isLoggedIn()) {
+    const avatarImg = user.avatar ? `<img id="navbar-avatar" src="${API_BASE}${user.avatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-right: 8px;">` : `<svg id="navbar-avatar-placeholder" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+    
     userHtml = `
       <div class="nav-dropdown" id="user-dropdown-container">
-        <button id="user-dropdown-btn" class="nav-dropdown-btn">
+        <button id="user-dropdown-btn" class="nav-dropdown-btn" style="display:flex; align-items:center;">
+          ${avatarImg}
           <span style="font-weight: 600; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-primary); font-family: var(--font-display);">${user.name}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted)"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted); margin-left:4px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
         <div id="user-dropdown-menu" class="nav-dropdown-content">
           ${user.role === 'admin' ? `<a href="/admin/dashboard.html">Admin Panel</a>` : ``}
+          <a href="/profile.html">My Profile</a>
           <a href="/orders.html">My Orders</a>
           <div class="dropdown-divider"></div>
           <button id="logout-btn">Logout</button>

@@ -41,6 +41,7 @@ exports.createTransaction = async (req, res) => {
       address: req.body.address,
       city: req.body.city,
       zip: req.body.zip,
+      payment_method: req.body.payment_method || 'card',
     });
 
     for (let i = 0; i < itemDetails.length; i++) {

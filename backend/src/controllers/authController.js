@@ -37,7 +37,8 @@ exports.register = async (req, res) => {
         id: newUser.id, 
         name: newUser.name, 
         email: newUser.email, 
-        role: newUser.role 
+        role: newUser.role,
+        avatar: newUser.avatar
       },
     });
   } catch (err) {
@@ -85,7 +86,8 @@ exports.login = async (req, res) => {
         id: user.id, 
         name: user.name, 
         email: user.email, 
-        role: user.role 
+        role: user.role,
+        avatar: user.avatar
       },
     });
   } catch (err) {
