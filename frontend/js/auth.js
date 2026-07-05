@@ -154,8 +154,7 @@ window.renderNavbar = function (opts = {}) {
     <nav class="navbar" id="main-navbar">
       <div class="navbar-inner">
         <a href="/index.html" class="navbar-brand">
-          <span class="navbar-logo">METALLICA</span>
-          <span class="navbar-tagline">Merch Store</span>
+          <img src="${API_BASE}/uploads/Metallica_logo.png" alt="Metallica Logo" class="navbar-logo-img" style="height: 48px; object-fit: contain;">
         </a>
         <div class="navbar-center">
           ${productsLinkHtml}
@@ -334,3 +333,117 @@ window.renderAdminSidebar = function (activePage) {
   const layout = document.querySelector('.admin-layout');
   if (layout) layout.insertAdjacentHTML('afterbegin', sidebarHtml);
 };
+
+// =============================================
+// FOOTER RENDERER
+// =============================================
+window.renderFooter = function () {
+  const isAdminPage = window.location.pathname.startsWith('/admin');
+  if (isAdminPage) return; // Don't show footer on admin dashboard
+
+  const footerHtml = `
+    <style>
+      .main-footer {
+        background-color: var(--color-black);
+        border-top: 1px solid var(--border-color);
+        padding: 60px 0 30px;
+        margin-top: 60px;
+        color: var(--color-silver);
+        font-family: var(--font-base);
+      }
+      .footer-inner {
+        max-width: var(--container-width, 1200px);
+        margin: 0 auto;
+        padding: 0 var(--space-xl, 32px);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+      }
+      .footer-brand .footer-logo {
+        height: 40px;
+        margin-bottom: 20px;
+        object-fit: contain;
+      }
+      .footer-brand p {
+        line-height: 1.6;
+        font-size: 14px;
+      }
+      .footer-links h4, .footer-contact h4 {
+        color: var(--color-white);
+        font-family: var(--font-display, inherit);
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+      }
+      .footer-links ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .footer-links li {
+        margin-bottom: 12px;
+      }
+      .footer-links a {
+        color: var(--color-silver);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 14px;
+      }
+      .footer-links a:hover {
+        color: var(--color-white);
+      }
+      .footer-contact p {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .footer-bottom {
+        max-width: var(--container-width, 1200px);
+        margin: 40px auto 0;
+        padding: 20px var(--space-xl, 32px) 0;
+        border-top: 1px solid var(--border-color, #333);
+        text-align: center;
+        font-size: 13px;
+        color: var(--color-silver-dark, #888);
+      }
+    </style>
+    <footer class="main-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="${API_BASE}/uploads/Metallica_logo.png" alt="Metallica Logo" class="footer-logo">
+          <p>The Heaviest Merch in Metal. Official merchandise store bringing you exclusive tour tees, hoodies, vinyl, and accessories directly from the pit.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="/products.html">All Products</a></li>
+            <li><a href="/products.html?category=shirts">T-Shirts</a></li>
+            <li><a href="/products.html?category=hoodies">Hoodies</a></li>
+            <li><a href="/products.html?category=vinyl">Vinyls</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Support</h4>
+          <p><strong>Email:</strong> store@metallica.com</p>
+          <p><strong>Phone:</strong> +1 (800) METALLICA</p>
+          <div style="margin-top: 20px;">
+            <a href="/about.html" style="color: var(--color-silver); text-decoration: none; margin-right: 15px; font-size: 14px;">About Us</a>
+            <a href="/contact.html" style="color: var(--color-silver); text-decoration: none; font-size: 14px;">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; ${new Date().getFullYear()} Metallica Merch Store. All rights reserved.
+      </div>
+    </footer>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', footerHtml);
+};
+
+// Automatically render footer when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', window.renderFooter);
+} else {
+  window.renderFooter();
+}
