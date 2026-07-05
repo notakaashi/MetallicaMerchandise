@@ -21,19 +21,21 @@ function generateReceipt(transaction) {
     // Top blue thick border
     doc.lineWidth(8).strokeColor('#002b7f').moveTo(30, 34).lineTo(width - 30, 34).stroke();
 
-    // Gothic/Metallic "M" Logo
-    // A sharp, jagged "M" drawn with paths
-    doc.fillColor('#333333');
-    doc.moveTo(40, 85).lineTo(45, 45).lineTo(55, 45).lineTo(60, 65).lineTo(65, 45).lineTo(75, 45).lineTo(80, 85).lineTo(70, 85).lineTo(68, 62).lineTo(62, 78).lineTo(58, 78).lineTo(52, 62).lineTo(50, 85).fill();
-    doc.lineWidth(1).strokeColor('#DE0A26').moveTo(40, 85).lineTo(45, 45).lineTo(55, 45).lineTo(60, 65).lineTo(65, 45).lineTo(75, 45).lineTo(80, 85).lineTo(70, 85).lineTo(68, 62).lineTo(62, 78).lineTo(58, 78).lineTo(52, 62).lineTo(50, 85).lineTo(40, 85).stroke();
+    // Metallica Logo
+    const path = require('path');
+    const logoPath = path.join(__dirname, '../../uploads/metallica_pdf.png');
+    try {
+      doc.image(logoPath, 40, 50, { width: 140 });
+    } catch (e) {
+      doc.fillColor('black').font('Helvetica-Bold').fontSize(20).text('METALLICA', 40, 55);
+    }
 
     // Company Details
-    doc.fillColor('black').font('Helvetica').fontSize(14).text('METALLICA', 90, 55);
-    doc.fontSize(8).text('Operated by', 90, 72);
-    doc.font('Helvetica-Bold').fontSize(10).text('METALLICA MERCH STORE', 90, 82);
-    doc.font('Helvetica').fontSize(9).text('NON-VAT REG TIN 123-456-789-00000', 90, 94);
-    doc.fontSize(7).text('4TH FLOOR, BIR BLDG. QUEZON AVENUE,', 90, 108);
-    doc.text('PINYAHAN, QUEZON CITY 1000', 90, 118);
+    doc.fillColor('black').fontSize(8).text('Operated by', 190, 72);
+    doc.font('Helvetica-Bold').fontSize(10).text('METALLICA MERCH STORE', 190, 82);
+    doc.font('Helvetica').fontSize(9).text('NON-VAT REG TIN 123-456-789-00000', 190, 94);
+    doc.fontSize(7).text('4TH FLOOR, BIR BLDG. QUEZON AVENUE,', 190, 108);
+    doc.text('PINYAHAN, QUEZON CITY 1000', 190, 118);
 
     // INVOICE Text
     doc.fillColor('#002b7f').font('Helvetica-Bold').fontSize(24).text('INVOICE', 0, 60, { align: 'right', width: width - 40 });
