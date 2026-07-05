@@ -14,13 +14,65 @@ window.showToast = function (message, type = 'info', title = '') {
     document.body.appendChild(container);
   }
 
-  const icons  = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
-  const titles = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
+  if (!document.getElementById('premium-toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'premium-toast-styles';
+    style.innerHTML = `
+      .toast-container { z-index: 9999; }
+      .toast {
+        background: linear-gradient(145deg, #181818 0%, #0a0a0a 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 2px !important;
+        padding: 20px 24px !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        font-family: var(--font-display) !important;
+        position: relative;
+        overflow: hidden;
+        border-left: none !important;
+      }
+      .toast::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; height: 3px; width: 100%;
+        background: var(--color-accent);
+        transform-origin: left;
+        animation: toastProgress 4s linear forwards;
+      }
+      .toast.success::after { background: var(--color-success); }
+      .toast.error::after { background: var(--color-accent); }
+      .toast.warning::after { background: var(--color-warning); }
+      .toast.info::after { background: var(--color-silver); }
+      
+      @keyframes toastProgress { 0% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+      
+      .toast-icon { display: none !important; }
+      .toast-content { width: 100%; }
+      .toast-title {
+        font-weight: 800 !important;
+        font-size: 14px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--color-white) !important;
+        margin-bottom: 6px !important;
+      }
+      .toast.success .toast-title { color: var(--color-success) !important; }
+      .toast.error .toast-title { color: var(--color-accent) !important; }
+      
+      .toast-message {
+        font-size: 13px !important;
+        color: var(--color-silver-light) !important;
+        font-family: var(--font-body) !important;
+        letter-spacing: 0;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const titles = { success: 'SUCCESS', error: 'ERROR', warning: 'WARNING', info: 'INFO' };
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${icons[type] || 'Info'}</span>
     <div class="toast-content">
       <div class="toast-title">${title || titles[type]}</div>
       <div class="toast-message">${message}</div>
@@ -30,7 +82,7 @@ window.showToast = function (message, type = 'info', title = '') {
 
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(-20px)';
+    toast.style.transform = 'translateY(10px)';
     toast.style.transition = 'all 0.3s ease';
     setTimeout(() => toast.remove(), 300);
   }, 4000);
