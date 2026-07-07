@@ -166,7 +166,9 @@ $(document).ready(function () {
   });
 
   // Modal logic
-  $(document).on('click', '.open-modal', function() {
+  $(document).on('click', '.open-modal', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
     let p = $(this).closest('.product-card').data('product');
     $('#detail-name').text(p.name);
     $('#detail-price').text(`₱${parseFloat(p.price).toFixed(2)}`);

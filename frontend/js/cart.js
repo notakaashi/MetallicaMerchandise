@@ -81,7 +81,7 @@ window.Cart = {
     let html = '';
     for (const item of items) {
       const imgTag = item.image
-        ? `<img class="cart-item-image" src="${item.image}" alt="${item.name}" onerror="this.style.display='none'">`
+        ? `<img class="cart-item-image" src="${typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:3001'}/uploads/${item.image}" alt="${item.name}" onerror="this.style.display='none'">`
         : `<div class="cart-item-image" style="background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:2px;">M</div>`;
 
       html += `
@@ -175,7 +175,7 @@ window.loadProducts = function (page = 1, append = false) {
           </div>
           <div class="product-card-footer">
             <button class="btn btn-accent btn-sm w-full add-to-cart-btn"
-              data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" ${p.stock === 0 ? 'disabled' : ''}>
+              data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.images && p.images.length ? p.images[0].image_path : ''}" ${p.stock === 0 ? 'disabled' : ''}>
               ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
             </button>
           </div>
@@ -237,7 +237,7 @@ window.openProductModal = function (productId) {
           </div>
           <div class="grid grid-cols-2" style="gap:var(--space-md)">
             <button class="btn btn-accent btn-lg w-full" id="modal-add-to-cart"
-              data-id="${p.id}" data-name="${p.name}" data-price="${p.price}"
+              data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${images.length ? images[0].image_path : ''}"
               ${p.stock === 0 ? 'disabled' : ''}>
               ${p.stock === 0 ? 'Sold Out' : 'Add to Cart'}
             </button>
@@ -385,7 +385,7 @@ $(document).ready(function () {
   // Add to cart (product grid)
   $(document).on('click', '.add-to-cart-btn', function (e) {
     e.stopPropagation();
-    window.Cart.add({ id: parseInt($(this).data('id')), name: $(this).data('name'), price: parseFloat($(this).data('price')), images: [] });
+    window.Cart.add({ id: parseInt($(this).data('id')), name: $(this).data('name'), price: parseFloat($(this).data('price')), images: [{ image_path: $(this).data('image') }] });
   });
 
   // Quick View button specifically — still opens the modal
@@ -419,7 +419,7 @@ $(document).ready(function () {
   // Modal add to cart
   $(document).on('click', '#modal-add-to-cart', function () {
     const qty = parseInt($('#modal-qty').text());
-    window.Cart.add({ id: parseInt($(this).data('id')), name: $(this).data('name'), price: parseFloat($(this).data('price')), images: [] }, qty);
+    window.Cart.add({ id: parseInt($(this).data('id')), name: $(this).data('name'), price: parseFloat($(this).data('price')), images: [{ image_path: $(this).data('image') }] }, qty);
     $('#product-modal-overlay').removeClass('open');
     $('body').css('overflow', '');
     window.Cart.open();
