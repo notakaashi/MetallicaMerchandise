@@ -363,7 +363,7 @@ function initTransactionsTable() {
       $('#transactions-table').DataTable({
         data: data.transactions,
         columns: [
-          { data: 'id', title: '#', width: '50px' },
+          { data: null, title: '#', width: '80px', render: (row) => row.order_number || ('ORD-' + String(row.id).padStart(3, '0')) },
           { data: 'user', title: 'Customer', render: (u) => u ? `<div>${u.name}</div><div style="font-size:12px;color:var(--text-muted)">${u.email}</div>` : '—' },
           { data: 'items', title: 'Items', orderable: false, render: (items) => items ? `${items.length} item(s)` : '—' },
           { data: 'total_price', title: 'Total', render: (d) => `<strong style="color:var(--accent-red)">₱${parseFloat(d).toFixed(2)}</strong>` },
@@ -404,8 +404,8 @@ function initTransactionsTable() {
     const id = $(this).data('id'), status = $(this).val(), $select = $(this);
     $.ajax({
       url: `${API_BASE}/api/transactions/${id}/status`, method: 'PATCH', contentType: 'application/json', headers: window.Auth.authHeaders(), data: JSON.stringify({ status }),
-      success: () => {
-        window.showToast(`Order #${id} marked as ${status}`, 'success');
+      success: (res) => {
+        window.showToast(`Order #${res.transaction.order_number || res.transaction.id} marked as ${status}`, 'success');
         const colors = { pending: '#ff9f43', shipped: '#00cfe8', delivering: '#7367f0', completed: '#28c76f', cancelled: '#ea5455' };
         $select.css('border-color', colors[status] || '');
       },

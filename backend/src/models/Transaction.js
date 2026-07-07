@@ -13,6 +13,12 @@ const Transaction = sequelize.define('Transaction', {
       allowNull: false,
       references: { model: 'users', key: 'id' },
     },
+    order_number: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `ORD-${String(this.id).padStart(3, '0')}`;
+      }
+    },
     status: {
       type: DataTypes.ENUM('pending', 'completed', 'cancelled', 'shipped', 'delivering'),
       defaultValue: 'pending',

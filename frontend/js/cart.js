@@ -325,7 +325,7 @@ window.loadMyOrders = function () {
             <div class="order-card-header">
               <div>
               <a href="/order?id=${tx.id}" style="text-decoration:none;color:inherit;display:block">
-                  <div class="order-id">Order <span class="text-accent">#${tx.id}</span></div>
+                  <div class="order-id">Order <span class="text-accent">#${tx.order_number || ('ORD-' + String(tx.id).padStart(3, '0'))}</span></div>
                 </a>
                 <div class="text-muted mt-1" style="font-size:12px;">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
               </div>
@@ -521,7 +521,7 @@ $(document).ready(function () {
           }),
           success: function (data) {
             window.Cart.clear();
-            window.showToast(`Order #${data.transaction.id} placed!`, 'success', 'Order Confirmed');
+            window.showToast(`Order #${data.transaction.order_number || data.transaction.id} placed!`, 'success', 'Order Confirmed');
             setTimeout(() => window.location.href = '/orders.html', 1500);
           },
           error: function (xhr) {

@@ -158,8 +158,8 @@ exports.updateTransactionStatus = async (req, res) => {
       }
     }
 
-    // Send email + PDF receipt only when status transitions to completed
-    if (newStatus === 'completed' && previousStatus !== 'completed') {
+    // Send email + PDF receipt when status changes
+    if (newStatus !== previousStatus) {
       try {
         let pdfBuffer = await generateReceipt(transaction);
         await sendReceiptEmail(transaction.user, transaction, pdfBuffer);
@@ -167,7 +167,7 @@ exports.updateTransactionStatus = async (req, res) => {
         console.error('Email or PDF error during status update:', emailErr.message);
       }
     }
-    res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status } });
+    res.json({ message: 'Status updated', transaction: { id: transaction.id, status: transaction.status, order_number: transaction.order_number } });
   } catch (err) {
     console.error('Update status error:', err);
     res.status(500).json({ error: 'Failed to update status' });

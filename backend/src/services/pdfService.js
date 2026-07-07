@@ -41,7 +41,7 @@ function generateReceipt(transaction) {
     doc.fillColor('#002b7f').font('Helvetica-Bold').fontSize(24).text('INVOICE', 0, 60, { align: 'right', width: width - 40 });
 
     // Invoice No
-    const invoiceNo = String(transaction.id).padStart(7, '0');
+    const invoiceNo = transaction.order_number || ('ORD-' + String(transaction.id).padStart(3, '0'));
     doc.fillColor('red').font('Helvetica-Bold').fontSize(12).text(`Invoice No. ${invoiceNo}`, 0, 130, { align: 'right', width: width - 40 });
 
     // Checkboxes and Date Box

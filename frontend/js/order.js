@@ -48,7 +48,7 @@ $(document).ready(function () {
         <div class="order-card">
           <div class="order-card-header">
             <div>
-              <div class="order-id">Order <span>#${tx.id}</span></div>
+              <div class="order-id">Order <span>#${tx.order_number || ('ORD-' + String(tx.id).padStart(3, '0'))}</span></div>
               <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
             </div>
             <span class="badge ${statusBadge}">${tx.status}</span>

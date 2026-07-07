@@ -49,10 +49,33 @@ async function getTransporter() {
 async function sendReceiptEmail(user, transaction, pdfBuffer) {
   const t = await getTransporter();
 
+  const statusTitles = {
+    pending: 'Order Placed',
+    shipped: 'Order Shipped',
+    delivering: 'Order Shipped',
+    completed: 'Order Completed',
+    cancelled: 'Order Cancelled'
+  };
+  const title = statusTitles[transaction.status] || 'Order Update';
+  const orderNumber = transaction.order_number || transaction.id;
+
+  let message = '';
+  if (transaction.status === 'pending') {
+    message = `Thank you for your purchase, <strong>${user.name}</strong>.<br>Order <strong style="color: #ffffff;">#${orderNumber}</strong> has been successfully placed.`;
+  } else if (transaction.status === 'shipped' || transaction.status === 'delivering') {
+    message = `Hi <strong>${user.name}</strong>,<br>Great news! Order <strong style="color: #ffffff;">#${orderNumber}</strong> has been shipped and is on its way.`;
+  } else if (transaction.status === 'completed') {
+    message = `Hi <strong>${user.name}</strong>,<br>Order <strong style="color: #ffffff;">#${orderNumber}</strong> has been delivered and completed. Thank you for your support!`;
+  } else if (transaction.status === 'cancelled') {
+    message = `Hi <strong>${user.name}</strong>,<br>We're sorry to inform you that order <strong style="color: #ffffff;">#${orderNumber}</strong> has been cancelled.`;
+  } else {
+    message = `Order <strong style="color: #ffffff;">#${orderNumber}</strong> status updated to ${transaction.status}.`;
+  }
+
   const info = await t.sendMail({
     from: `"Metallica Merch Store" <${process.env.SMTP_USER || 'noreply@metallica.store'}>`,
     to: user.email,
-    subject: `🎸 Order #${transaction.id} Delivered — Metallica Merch Store`,
+    subject: `🎸 ${title} - #${orderNumber} — Metallica Merch Store`,
     html: `
       <div style="background-color:#050505; color:#ffffff; font-family:'Inter', Arial, sans-serif; padding:0; max-width:700px; margin:0 auto;">
         
@@ -65,8 +88,8 @@ async function sendReceiptEmail(user, transaction, pdfBuffer) {
         <div style="padding: 20px 50px 60px; background-color: #050505;">
           
           <div style="text-align: center; margin-bottom: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px;">
-            <h1 style="color:#ffffff; font-size: 24px; margin: 0 0 10px 0; font-weight: 300; text-transform: uppercase; letter-spacing: 0.2em; font-family: 'Outfit', sans-serif;">Order Delivered</h1>
-            <p style="color:#888888; font-size: 14px; margin: 0; line-height: 1.6;">Thank you for your purchase, <strong>${user.name}</strong>.<br>Order <strong style="color: #ffffff;">#${transaction.id}</strong> has been delivered.</p>
+            <h1 style="color:#ffffff; font-size: 24px; margin: 0 0 10px 0; font-weight: 300; text-transform: uppercase; letter-spacing: 0.2em; font-family: 'Outfit', sans-serif;">${title}</h1>
+            <p style="color:#888888; font-size: 14px; margin: 0; line-height: 1.6;">${message}</p>
           </div>
 
           <!-- Receipt Details -->
