@@ -39,6 +39,9 @@ const upload = multer({
 router.get('/profile', auth, userController.getProfile);
 router.put('/profile', auth, upload.single('avatar'), userController.updateProfile);
 
+router.get('/deleted', adminMiddleware, userController.getDeletedUsers);
+router.put('/:id/restore', adminMiddleware, userController.restoreUser);
+
 router.get('/', adminMiddleware, userController.getAllUsers);
 router.post('/', adminMiddleware, userController.createUser);
 router.put('/:id', adminMiddleware, userController.updateUser);

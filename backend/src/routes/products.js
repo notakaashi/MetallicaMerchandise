@@ -40,6 +40,8 @@ const upload = multer({
 router.get('/', productController.getAllProducts);
 router.get('/search', productController.searchProducts);
 router.get('/autocomplete', productController.autocompleteProducts);
+router.get('/deleted', adminMiddleware, productController.getDeletedProducts);
+router.put('/:id/restore', adminMiddleware, productController.restoreProduct);
 router.get('/:id', productController.getProduct);
 
 router.get('/:id/reviews', reviewController.getProductReviews);

@@ -35,6 +35,17 @@ async function runMigration() {
       console.log('Added payment_method column to transactions');
     } catch (e) { console.log('Column payment_method might already exist'); }
 
+    console.log('Adding deletedAt columns for soft deletes...');
+    try {
+      await sequelize.query("ALTER TABLE users ADD COLUMN deletedAt DATETIME NULL");
+      console.log('Added deletedAt column to users');
+    } catch (e) { console.log('Column deletedAt might already exist on users'); }
+
+    try {
+      await sequelize.query("ALTER TABLE products ADD COLUMN deletedAt DATETIME NULL");
+      console.log('Added deletedAt column to products');
+    } catch (e) { console.log('Column deletedAt might already exist on products'); }
+
     console.log('DB MIGRATION COMPLETED SUCCESSFULLY');
     process.exit(0);
   } catch (err) {

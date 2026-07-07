@@ -264,18 +264,52 @@ exports.deleteProduct = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    for (let i = 0; i < product.images.length; i++) {
-      let img = product.images[i];
-      let filePath = path.join(__dirname, '../../uploads', img.image_path);
-      if (fs.existsSync(filePath) === true) {
-        fs.unlinkSync(filePath);
-      }
-    }
+    // Since it's a soft delete, do not physically remove images
+    // for (let i = 0; i < product.images.length; i++) { ... }
 
     await product.destroy();
     res.json({ message: 'Product deleted' });
   } catch (err) {
     console.error('Delete product error:', err);
     res.status(500).json({ error: 'Failed to delete product' });
+  }
+};
+
+exports.getDeletedProducts = async (req, res) => {
+  try {
+    let result = await Product.findAndCountAll({
+      where: { deletedAt: { [Op.ne]: null } },
+      paranoid: false,
+      include: [{ model: ProductImage, as: 'images', limit: 1 }],
+      order: [['createdAt', 'DESC']],
+      distinct: true,
+    });
+    res.json({
+      products: result.rows,
+      pagination: {
+        total: result.count,
+        page: 1,
+        limit: result.count,
+        pages: 1,
+      },
+    });
+  } catch (err) {
+    console.error('List deleted products error:', err);
+    res.status(500).json({ error: 'Failed to fetch deleted products' });
+  }
+};
+
+exports.restoreProduct = async (req, res) => {
+  try {
+    let productId = req.params.id;
+    let product = await Product.findByPk(productId, { paranoid: false });
+    if (product === null) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    await product.restore();
+    res.json({ success: true, message: 'Product restored successfully' });
+  } catch (err) {
+    console.error('Restore product error:', err);
+    res.status(500).json({ error: 'Failed to restore product' });
   }
 };

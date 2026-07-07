@@ -119,9 +119,10 @@ function renderPieChart(statusData) {
 // =============================================
 // USERS TABLE
 // =============================================
-function initUsersTable() {
+function initUsersTable(showDeleted = false) {
+  const endpoint = showDeleted ? `${API_BASE}/api/users/deleted` : `${API_BASE}/api/users`;
   $.ajax({
-    url: `${API_BASE}/api/users`,
+    url: endpoint,
     headers: window.Auth.authHeaders(),
     success: function (data) {
       if ($.fn.DataTable.isDataTable('#users-table')) $('#users-table').DataTable().destroy();
@@ -137,6 +138,9 @@ function initUsersTable() {
           {
             data: 'id', title: 'Actions', orderable: false,
             render: (id, _, row) => {
+              if (showDeleted) {
+                return `<button class="btn btn-sm btn-success restore-user-btn" data-id="${id}" data-name="${row.name}">Restore</button>`;
+              }
               const rowDataStr = encodeURIComponent(JSON.stringify(row));
               return `<div style="display:flex;gap:6px">
                 <button class="btn btn-sm btn-secondary edit-user-btn" data-user="${rowDataStr}">Edit</button>
@@ -156,7 +160,7 @@ function initUsersTable() {
 
   let editingUserId = null;
 
-  $(document).on('click', '#add-user-btn', function () {
+  $(document).off('click', '#add-user-btn').on('click', '#add-user-btn', function () {
     editingUserId = null;
     $('#user-form')[0].reset();
     $('#user-modal-title').text('Add User');
@@ -169,7 +173,7 @@ function initUsersTable() {
     $('#user-form-modal').addClass('open');
   });
 
-  $(document).on('click', '.edit-user-btn', function () {
+  $(document).off('click', '.edit-user-btn').on('click', '.edit-user-btn', function () {
     const user = JSON.parse(decodeURIComponent($(this).data('user')));
     editingUserId = user.id;
     $('#user-form')[0].reset();
@@ -194,7 +198,7 @@ function initUsersTable() {
     $('#user-form-modal').addClass('open');
   });
 
-  $(document).on('click', '#user-form-modal-close, #user-modal-overlay-bg', function () {
+  $(document).off('click', '#user-form-modal-close, #user-modal-overlay-bg').on('click', '#user-form-modal-close, #user-modal-overlay-bg', function () {
     $('#user-form-modal').removeClass('open');
   });
 
@@ -228,7 +232,7 @@ function initUsersTable() {
     }
   });
 
-  $(document).on('click', '.delete-user-btn', function () {
+  $(document).off('click', '.delete-user-btn').on('click', '.delete-user-btn', function () {
     const id = $(this).data('id');
     const name = $(this).data('name');
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
@@ -238,6 +242,28 @@ function initUsersTable() {
       error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to delete user', 'error'),
     });
   });
+
+  $(document).off('click', '#toggle-deleted-users-btn').on('click', '#toggle-deleted-users-btn', function () {
+    const isDeletedView = $(this).data('view') === 'deleted';
+    if (isDeletedView) {
+      $(this).data('view', 'active').text('View Trash').removeClass('btn-danger').addClass('btn-secondary');
+      initUsersTable(false);
+    } else {
+      $(this).data('view', 'deleted').text('View Active').removeClass('btn-secondary').addClass('btn-danger');
+      initUsersTable(true);
+    }
+  });
+
+  $(document).off('click', '.restore-user-btn').on('click', '.restore-user-btn', function () {
+    const id = $(this).data('id');
+    const name = $(this).data('name');
+    if (!confirm(`Are you sure you want to restore ${name}?`)) return;
+    $.ajax({
+      url: `${API_BASE}/api/users/${id}/restore`, method: 'PUT', headers: window.Auth.authHeaders(),
+      success: () => { window.showToast('User restored', 'success'); initUsersTable(true); },
+      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to restore user', 'error'),
+    });
+  });
 }
 
 // =============================================
@@ -245,28 +271,37 @@ function initUsersTable() {
 // =============================================
 let editingProductId = null;
 
-function initProductsTable() {
-  $.get(`${API_BASE}/api/products?limit=100`, function (data) {
-    if ($.fn.DataTable.isDataTable('#products-table')) $('#products-table').DataTable().destroy();
-    $('#products-table').DataTable({
-      data: data.products,
-      columns: [
-        { data: 'id', title: '#', width: '50px' },
-        { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${API_BASE}/uploads/${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">Merch</span>' },
-        { data: 'name', title: 'Product Name' },
-        { data: 'category', title: 'Category', render: (d) => `<span style="text-transform:capitalize;color:var(--text-secondary)">${d || 'other'}</span>` },
-        { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">₱${parseFloat(d).toFixed(2)}</strong>` },
-        { data: 'stock', title: 'Stock', render: (d) => d > 10 ? `<span class="badge badge-success">${d}</span>` : d > 0 ? `<span class="badge badge-warning">${d}</span>` : `<span class="badge badge-danger">0</span>` },
-        { data: 'id', title: 'Actions', orderable: false, render: (id) => `<div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary edit-product-btn" data-id="${id}">Edit</button><button class="btn btn-sm btn-danger delete-product-btn" data-id="${id}">Delete</button></div>` },
-      ],
-      pageLength: 10,
-      dom: '<"flex justify-between items-center mb-2"lf>t<"flex justify-between items-center mt-2"ip>',
-      language: { search: '', searchPlaceholder: 'Search products...' },
-      order: [[0, 'desc']],
-    });
+function initProductsTable(showDeleted = false) {
+  const endpoint = showDeleted ? `${API_BASE}/api/products/deleted` : `${API_BASE}/api/products?limit=100`;
+  $.ajax({
+    url: endpoint,
+    headers: window.Auth.authHeaders(),
+    success: function (data) {
+      if ($.fn.DataTable.isDataTable('#products-table')) $('#products-table').DataTable().destroy();
+      $('#products-table').DataTable({
+        data: data.products,
+        columns: [
+          { data: 'id', title: '#', width: '50px' },
+          { data: 'images', title: 'Image', orderable: false, render: (imgs) => imgs && imgs.length ? `<img src="${API_BASE}/uploads/${imgs[0].image_path}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">` : '<span style="font-size:24px">Merch</span>' },
+          { data: 'name', title: 'Product Name' },
+          { data: 'category', title: 'Category', render: (d) => `<span style="text-transform:capitalize;color:var(--text-secondary)">${d || 'other'}</span>` },
+          { data: 'price', title: 'Price', render: (d) => `<strong style="color:var(--accent-red)">₱${parseFloat(d).toFixed(2)}</strong>` },
+          { data: 'stock', title: 'Stock', render: (d) => d > 10 ? `<span class="badge badge-success">${d}</span>` : d > 0 ? `<span class="badge badge-warning">${d}</span>` : `<span class="badge badge-danger">0</span>` },
+          { data: 'id', title: 'Actions', orderable: false, render: (id) => {
+              if (showDeleted) return `<button class="btn btn-sm btn-success restore-product-btn" data-id="${id}">Restore</button>`;
+              return `<div style="display:flex;gap:6px"><button class="btn btn-sm btn-secondary edit-product-btn" data-id="${id}">Edit</button><button class="btn btn-sm btn-danger delete-product-btn" data-id="${id}">Delete</button></div>`;
+            } 
+          },
+        ],
+        pageLength: 10,
+        dom: '<"flex justify-between items-center mb-2"lf>t<"flex justify-between items-center mt-2"ip>',
+        language: { search: '', searchPlaceholder: 'Search products...' },
+        order: [[0, 'desc']],
+      });
+    }
   });
 
-  $(document).on('click', '#add-product-btn', function () {
+  $(document).off('click', '#add-product-btn').on('click', '#add-product-btn', function () {
     editingProductId = null;
     $('#product-form')[0].reset();
     $('#image-preview-grid').html('');
@@ -274,7 +309,7 @@ function initProductsTable() {
     $('#product-form-modal').addClass('open');
   });
 
-  $(document).on('click', '.edit-product-btn', function () {
+  $(document).off('click', '.edit-product-btn').on('click', '.edit-product-btn', function () {
     const id = $(this).data('id');
     editingProductId = id;
     $.get(`${API_BASE}/api/products/${id}`, function (data) {
@@ -286,7 +321,7 @@ function initProductsTable() {
       $('#edit-category').val(p.category || 'other');
       let imgHtml = (p.images || []).map(img => `
         <div class="image-preview-item" data-img-id="${img.id}">
-          <img src="${img.image_path}" alt="Product image">
+          <img src="${API_BASE}/uploads/${img.image_path}" alt="Product image">
           <button type="button" class="image-preview-remove remove-existing-img" data-img-id="${img.id}">×</button>
         </div>`).join('');
       $('#image-preview-grid').html(imgHtml);
@@ -295,7 +330,7 @@ function initProductsTable() {
     });
   });
 
-  $(document).on('click', '.delete-product-btn', function () {
+  $(document).off('click', '.delete-product-btn').on('click', '.delete-product-btn', function () {
     const id = $(this).data('id');
     if (!confirm('Delete this product? This cannot be undone.')) return;
     $.ajax({
@@ -312,12 +347,12 @@ function initProductsTable() {
     });
   });
 
-  $(document).on('click', '#product-form-modal-close, #product-modal-overlay-bg', function () {
+  $(document).off('click', '#product-form-modal-close, #product-modal-overlay-bg').on('click', '#product-form-modal-close, #product-modal-overlay-bg', function () {
     $('#product-form-modal').removeClass('open');
     editingProductId = null;
   });
 
-  $(document).on('change', '#edit-images', function () {
+  $(document).off('change', '#edit-images').on('change', '#edit-images', function () {
     for (const file of this.files) {
       const reader = new FileReader();
       reader.onload = (e) => $('#image-preview-grid').append(`<div class="image-preview-item new-preview"><img src="${e.target.result}" alt="preview"></div>`);
@@ -325,7 +360,7 @@ function initProductsTable() {
     }
   });
 
-  $(document).on('click', '.remove-existing-img', function () {
+  $(document).off('click', '.remove-existing-img').on('click', '.remove-existing-img', function () {
     const imgId = $(this).data('img-id');
     $(this).closest('.image-preview-item').remove();
     $('<input>').attr({ type: 'hidden', name: 'removeImages[]', value: imgId }).appendTo('#product-form');
@@ -348,6 +383,27 @@ function initProductsTable() {
         error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save product', 'error'),
       });
     }
+  });
+
+  $(document).off('click', '#toggle-deleted-products-btn').on('click', '#toggle-deleted-products-btn', function () {
+    const isDeletedView = $(this).data('view') === 'deleted';
+    if (isDeletedView) {
+      $(this).data('view', 'active').text('View Trash').removeClass('btn-danger').addClass('btn-secondary');
+      initProductsTable(false);
+    } else {
+      $(this).data('view', 'deleted').text('View Active').removeClass('btn-secondary').addClass('btn-danger');
+      initProductsTable(true);
+    }
+  });
+
+  $(document).off('click', '.restore-product-btn').on('click', '.restore-product-btn', function () {
+    const id = $(this).data('id');
+    if (!confirm('Restore this product?')) return;
+    $.ajax({
+      url: `${API_BASE}/api/products/${id}/restore`, method: 'PUT', headers: window.Auth.authHeaders(),
+      success: () => { window.showToast('Product restored', 'success'); initProductsTable(true); },
+      error: (xhr) => window.showToast(xhr.responseJSON ? xhr.responseJSON.error : 'Failed to restore product', 'error'),
+    });
   });
 }
 

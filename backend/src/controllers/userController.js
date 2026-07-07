@@ -152,3 +152,34 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ error: 'Failed to update profile' });
   }
 };
+
+exports.getDeletedUsers = async (req, res) => {
+  try {
+    const { Op } = require('sequelize');
+    let users = await User.findAll({
+      where: { deletedAt: { [Op.ne]: null } },
+      paranoid: false,
+      attributes: ['id', 'name', 'email', 'role', 'status', 'createdAt'],
+      order: [['createdAt', 'DESC']],
+    });
+    res.json({ users: users });
+  } catch (err) {
+    console.error('List deleted users error:', err);
+    res.status(500).json({ error: 'Failed to fetch deleted users' });
+  }
+};
+
+exports.restoreUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByPk(userId, { paranoid: false });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    await user.restore();
+    res.json({ success: true, message: 'User restored successfully' });
+  } catch (err) {
+    console.error('Restore user error:', err);
+    res.status(500).json({ error: 'Failed to restore user' });
+  }
+};
